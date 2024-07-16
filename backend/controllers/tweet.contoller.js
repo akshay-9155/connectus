@@ -8,7 +8,7 @@ export const createTweet = async (req, res) => {
         const { id } = req.user;
         // Ensure that id and userId are valid ObjectIds
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).send("Invalid ID format");
+            return res.status(400).json({ "message": "Invalid ID format", success: false });
         }
         const newTweet = new Tweet();
         newTweet.description = description;
@@ -20,10 +20,10 @@ export const createTweet = async (req, res) => {
             { new: true }
         );
 
-        res.status(200).json({ tweet: savedTweet, user: user, success: true });
+        res.status(200).json({ "message": "Tweet created Successfully", tweet: savedTweet, user: user, success: true });
     } catch (error) {
         console.log(error);
-        res.status(500).send("Internal Server Error!")
+        res.status(500).json({ "message": "Internal Server Error", success: false });
     }
 }
 
@@ -33,7 +33,7 @@ export const deleteTweet = async (req, res) => {
         const { id } = req.user;
         // Ensure that id and userId are valid ObjectIds
         if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(tweetId)) {
-            return res.status(400).send("Invalid ID format");
+            return res.status(400).json({ "message": "Invalid ID format", success: false });
         }
         const deletedTweet = await Tweet.findByIdAndDelete(tweetId);
         if (!deletedTweet) {
@@ -43,7 +43,7 @@ export const deleteTweet = async (req, res) => {
         return res.status(200).json({ "message": "Tweet deleted successfully!", "deletedTweet": deletedTweet, success: true })
     } catch (error) {
         console.log(error);
-        res.status(500).send("Internal Server Error!");
+        res.status(500).json({ "message": "Internal Server Error", success: false });
     }
 }
 
@@ -53,7 +53,7 @@ export const likeOrDislike = async (req, res) => {
         const { id } = req.user;
         // Ensure that id and userId are valid ObjectIds
         if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(tweetId)) {
-            return res.status(400).send("Invalid ID format");
+            return res.status(400).json({ "message": "Invalid ID format", success: false });
         }
         const tweet = await Tweet.findById(tweetId);
         if (!tweet) {
@@ -68,7 +68,7 @@ export const likeOrDislike = async (req, res) => {
         }
     } catch (error) {
         console.log(error);
-        res.status(500).send("Internal Server Error!")
+        res.status(500).json({ "message": "Internal Server Error", success: false });
     }
 }
 
@@ -88,10 +88,10 @@ export const GetAllTweet = async (req, res) => {
             ]
         }).lean();
 
-        res.status(200).json({ Tweets: allTweets });
+        res.status(200).json({ message: "All tweets found Successfully", Tweets: allTweets });
     } catch (error) {
         console.error(error);
-        res.status(500).send("Internal Server Error");
+        res.status(500).json({ "message": "Internal Server Error", success: false });
     }
 };
 
@@ -107,10 +107,10 @@ export const getFollowingTweets =  async (req, res) => {
             return res.status(404).json({ message: "User not following anyone!" });
         }
         const followingTweets = await Tweet.find({ "author": { $in: loggedInUser.following } }).lean();
-        res.status(200).json(followingTweets);
+        res.status(200).json({ message: "Following tweets found Successfully", followingTweets: followingTweets});
 
     } catch (error) {
         console.error(error);
-        res.status(500).send("Internal Server Error");
+        res.status(500).json({ "message": "Internal Server Error", success: false });
     }
 }

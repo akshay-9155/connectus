@@ -31,9 +31,10 @@ export const Register = async (req, res) => {
         // })
 
         // res.status(200).json({"message": "Account created Successfully!", success: true});
-        res.status(200).json(savedUser);
+        res.status(200).json({ "message": "User registered successfully!", savedUser: savedUser, success: true });
     } catch (error) {
         console.log("Can't Register", error);
+        res.status(500).json({"message":"Internal Server Error", success: false});
     }
 }
 
@@ -62,7 +63,7 @@ export const Login = async (req, res) => {
         res.status(200).cookie("token", token, options).json({ "message": "Logged In Successfully", "token": token, success: true });
     } catch (error) {
         console.log(error);
-        res.status(500).send("Internal Server Error");
+        res.status(500).json({ "message": "Internal Server Error", success: false });
     }
 }
 
@@ -80,7 +81,7 @@ export const Bookmark = async (req, res) => {
         const { id } = req.user;
         // Ensure that id and userId are valid ObjectIds
         if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(tweetId)) {
-            return res.status(400).send("Invalid ID format");
+            return res.status(400).json({"message":"Invalid ID format", success: false});
         }
         const user = await User.findById(id);
         if (!user) {
@@ -88,14 +89,14 @@ export const Bookmark = async (req, res) => {
         }
         if (user.bookmarks.includes(tweetId)) {
             const updatedUser = await User.findByIdAndUpdate(id, { $pull: { "bookmarks": tweetId } }, { new: true })
-            return res.status(200).json({ "message": "Bookmark removed", success: true, user: user })
+            return res.status(200).json({ "message": "Bookmark removed", success: true})
         } else {
             const updatedUser = await User.findByIdAndUpdate(id, { $push: { "bookmarks": tweetId } }, { new: true })
-            return res.status(200).json({ "message": "Bookmark added", success: true, user: user })
+            return res.status(200).json({ "message": "Bookmark added", success: true })
         }
     } catch (error) {
         console.log(error);
-        res.status(500).send("Internal Server Error");
+        res.status(500).json({ "message": "Internal Server Error", success: false });
     }
 }
 
@@ -104,7 +105,7 @@ export const Profile = async (req, res) => {
         const { id } = req.user;
         // Ensure that id and userId are valid ObjectIds
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).send("Invalid ID format");
+            return res.status(400).json({ "message": "Invalid ID format", success: false });
         }
         const user = await User.findById(id).select("-password");
         if (!user) {
@@ -114,7 +115,7 @@ export const Profile = async (req, res) => {
         res.status(200).json({ "message": "User found", user: user, success: true })
     } catch (error) {
         console.log(error);
-        res.status(500).send("Internal Server Error");
+        res.status(500).json({ "message": "Internal Server Error", success: false });
     }
 }
 
@@ -123,13 +124,13 @@ export const GetOtherUsers = async (req, res) => {
         const { id } = req.user;
         // Ensure that id and userId are valid ObjectIds
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).send("Invalid ID format");
+            return res.status(400).json({ "message": "Invalid ID format", success: false });
         }
         const otherUsers = await User.find({ _id: { $ne: id } }).select("-password");
-        res.status(200).json({ "users": otherUsers, success: true });
+        res.status(200).json({ "message": "Found other users Successfully!", "users": otherUsers, success: true });
     } catch (error) {
         console.log(error);
-        res.status(500).send("Internal Server Error");
+        res.status(500).json({ "message": "Internal Server Error", success: false });
     }
 }
 
@@ -140,21 +141,21 @@ export const Follow = async (req, res) => {
 
         // Ensure that id and userId are valid ObjectIds
         if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(userId)) {
-            return res.status(400).send("Invalid ID format");
+            return res.status(400).json({ "message": "Invalid ID format", success: false });
         }
 
         const { following } = await User.findById(id);
         if (following.includes(userId)) {
             const user = await User.findByIdAndUpdate(id, { $pull: { "following": userId } }, { new: true });
             const userToFollow = await User.findByIdAndUpdate(userId, { $pull: { "followers": id } }, { new: true });
-            res.status(200).json({ "currentUser": user, "userToFollow": userToFollow, success: true });
+            res.status(200).json({ "message": "Unfollowed!", "currentUser": user, "userToFollow": userToFollow, success: true });
         } else {
             const user = await User.findByIdAndUpdate(id, { $push: { "following": userId } }, { new: true });
             const userToFollow = await User.findByIdAndUpdate(userId, { $push: { "followers": id } }, { new: true });
-            res.status(200).json({ "currentUser": user, "userToFollow": userToFollow, success: true });
+            res.status(200).json({ "message": "Followed Successfully", "currentUser": user, "userToFollow": userToFollow, success: true });
         }
     } catch (error) {
         console.log(error);
-        res.status(500).send("Internal Server Error");
+        res.status(500).json({ "message": "Internal Server Error", success: false });
     }
 };
