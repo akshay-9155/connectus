@@ -6,7 +6,7 @@ const Cards = ({user}) => {
     <div className="flex justify-start gap-2 items-center mt-4">
       <div>
         <Avatar
-          src="https://imgs.search.brave.com/xcu1eZqbAd-Q1KxKDTV7ia-3DYof-JYvHhj1d_vHz7I/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly91cGxv/YWQud2lraW1lZGlh/Lm9yZy93aWtpcGVk/aWEvY29tbW9ucy90/aHVtYi85LzliL1Zp/cmF0X0tvaGxpX2lu/X1BNT19OZXdfRGVs/aGkuanBnLzUxMnB4/LVZpcmF0X0tvaGxp/X2luX1BNT19OZXdf/RGVsaGkuanBn"
+          src={user?.profileImage || "../assets/images/defaultProfileImage.jpg"}
           size="40"
           round={true}
           className="cursor-pointer"
@@ -16,7 +16,9 @@ const Cards = ({user}) => {
         <div className="">
           <div className=" flex items-center gap-2">
             <span>{user?.name}</span>
-            <MdVerified className="text-sky-400" />
+            {user?.followers.length > 1 && (
+              <MdVerified className="text-sky-400" />
+            )}
           </div>
           <span>{`@${user?.username}`}</span>
         </div>
