@@ -60,7 +60,7 @@ export const Login = async (req, res) => {
             httpOnly: true,
             secure: true
         }
-        res.status(200).cookie("token", token, options).json({ "message": "Logged In Successfully", "token": token, success: true });
+        res.status(200).cookie("token", token, options).json({ "message": "Logged In Successfully", user: user, "token": token, success: true });
     } catch (error) {
         console.log(error);
         res.status(500).json({ "message": "Internal Server Error", success: false });

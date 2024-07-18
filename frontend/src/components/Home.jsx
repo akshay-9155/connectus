@@ -1,6 +1,5 @@
 import React from "react";
 import LeftSidebar from "./LeftSidebar";
-import Feed from "./Feed";
 import RightSidebar from "./RightSidebar";
 import { Outlet } from "react-router-dom";
 

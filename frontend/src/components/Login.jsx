@@ -11,7 +11,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   // State to store the input data from user to send to backend
-  const [loginSignUpData, setLoginSignUPData] = useState({
+  const [loginSignUpData, setLoginSignUpData] = useState({
     name: "",
     username: "",
     email: "",
@@ -21,7 +21,7 @@ const Login = () => {
   // Function to update the stored user data
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setLoginSignUPData((prevLoginSignUpData) => ({
+    setLoginSignUpData((prevLoginSignUpData) => ({
       ...prevLoginSignUpData,
       [name]: value,
     }));
@@ -29,8 +29,8 @@ const Login = () => {
 
   // API call for LOGIN & REGISTER
   const handleSubmit = async (event) => {
-    const { name, username, email, password } = loginSignUpData;
     event.preventDefault();
+    const { name, username, email, password } = loginSignUpData;
     if (haveAccount) {
       try {
         const response = await axios.post(
@@ -47,7 +47,7 @@ const Login = () => {
           }
         );
         toast(response.data.message);
-        navigate("/");
+        if (response.data.success) navigate("/");
       } catch (error) {
         toast(error?.response?.data?.message || "Internal Server Error");
       }
@@ -69,7 +69,7 @@ const Login = () => {
           }
         );
         toast(response.data.message);
-        loginSignupHandler();
+        if (response.data.success) loginSignupHandler();
       } catch (error) {
         toast(error?.response?.data?.message || "Internal Server Error");
       }
@@ -106,7 +106,6 @@ const Login = () => {
           <form
             className=" flex flex-col gap-4"
             onSubmit={handleSubmit}
-            action=""
           >
             {!haveAccount && (
               <>

@@ -2,8 +2,17 @@ import React from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { MdVerified } from "react-icons/md";
 import { Link } from "react-router-dom";
+import useGetProfile from "../hooks/useGetProfile";
+import { useSelector } from "react-redux";
 
 const Profile = () => {
+  useGetProfile();
+  const profile = useSelector((state) => state.user.profile);
+
+  if (!profile) {
+    return <div>Loading...</div>; // Display a loading state while the profile is being fetched
+  }
+
   return (
     <div className="border-x-[1px] border-zinc-800 w-[50%] h-screen overflow-y-auto mx-8">
       <div className=" flex gap-8 px-4 py-1 items-center">
@@ -15,22 +24,30 @@ const Profile = () => {
         </Link>
         <div>
           <div className="flex gap-2 items-center text-xl">
-            <h3 className=" font-bold cursor-pointer">Ravish Kumar</h3>
+            <h3 className=" font-bold cursor-pointer">{profile.name}</h3>
             <MdVerified className=" text-sky-500" />
           </div>
-          <span className="font-semibold text-zinc-500">100 posts</span>
+          <span className="font-semibold text-zinc-500">
+            {profile.tweets.length} posts
+          </span>
         </div>
       </div>
       <div className="w-full">
         <img
-          src="https://pbs.twimg.com/profile_banners/930267858227019776/1589661418/1080x360"
+          src={
+            profile.bannerImageUrl ||
+            "https://pbs.twimg.com/profile_banners/930267858227019776/1589661418/1080x360"
+          }
           alt="banner-img"
         />
       </div>
       <div className="flex px-5 h-16 justify-between">
         <div className=" h-36 w-36 rounded-full overflow-hidden -translate-y-1/2 border-4 border-zinc-950">
           <img
-            src="https://pbs.twimg.com/profile_images/1263137854416437254/Rr9nuVIu_400x400.jpg"
+            src={
+              profile.profileImageUrl ||
+              "https://pbs.twimg.com/profile_images/1263137854416437254/Rr9nuVIu_400x400.jpg"
+            }
             alt="profile-photo"
           />
         </div>
@@ -41,9 +58,12 @@ const Profile = () => {
         </div>
       </div>
       <div className="mt-5 px-4">
-        <h3 className="text-xl font-bold">Akshay Anand</h3>
-        <span className=" text-zinc-500">@Username</span>
-        <p className="mt-5">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Voluptatem, iusto distinctio non officiis aliquid quasi qui dolorum rerum quae placeat!</p>
+        <h3 className="text-xl font-bold">{profile.name}</h3>
+        <span className=" text-zinc-500">@{profile.username}</span>
+        <p className="mt-5">
+          {profile.bio ||
+            "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Voluptatem, iusto distinctio non officiis aliquid quasi qui dolorum rerum quae placeat!"}
+        </p>
       </div>
     </div>
   );
