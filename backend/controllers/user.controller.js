@@ -37,7 +37,7 @@ export const Register = async (req, res) => {
         res.status(200).json({ "message": "User registered successfully!", savedUser: savedUser, success: true });
     } catch (error) {
         console.log("Can't Register", error);
-        res.status(500).json({"message":"Internal Server Error", success: false});
+        res.status(500).json({ "message": "Internal Server Error", success: false });
     }
 }
 
@@ -84,7 +84,7 @@ export const Bookmark = async (req, res) => {
         const { id } = req.user;
         // Ensure that id and userId are valid ObjectIds
         if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(tweetId)) {
-            return res.status(400).json({"message":"Invalid ID format", success: false});
+            return res.status(400).json({ "message": "Invalid ID format", success: false });
         }
         const user = await User.findById(id);
         if (!user) {
@@ -92,7 +92,7 @@ export const Bookmark = async (req, res) => {
         }
         if (user.bookmarks.includes(tweetId)) {
             const updatedUser = await User.findByIdAndUpdate(id, { $pull: { "bookmarks": tweetId } }, { new: true })
-            return res.status(200).json({ "message": "Bookmark removed", success: true})
+            return res.status(200).json({ "message": "Bookmark removed", success: true })
         } else {
             const updatedUser = await User.findByIdAndUpdate(id, { $push: { "bookmarks": tweetId } }, { new: true })
             return res.status(200).json({ "message": "Bookmark added", success: true })
@@ -122,14 +122,33 @@ export const Profile = async (req, res) => {
     }
 }
 
+// export const GetOtherUsers = async (req, res) => {
+//     try {
+//         const { id } = req.user;
+//         // Ensure that id and userId are valid ObjectIds
+//         if (!mongoose.Types.ObjectId.isValid(id)) {
+//             return res.status(400).json({ "message": "Invalid ID format", success: false });
+//         }
+//         const otherUsers = await User.find({ _id: { $ne: id } }).select("-password");
+//         res.status(200).json({ "message": "Found other users Successfully!", "users": otherUsers, success: true });
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).json({ "message": "Internal Server Error", success: false });
+//     }
+// }
+
+// Earlier in Who to follow section all the users are visible even those who are already followed by the current user.
+// Fixed this issue below. Above is the buggy version of code.
+
 export const GetOtherUsers = async (req, res) => {
     try {
         const { id } = req.user;
+        const { following } = await User.findById(id);
         // Ensure that id and userId are valid ObjectIds
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ "message": "Invalid ID format", success: false });
         }
-        const otherUsers = await User.find({ _id: { $ne: id } }).select("-password");
+        const otherUsers = await User.find({ _id: { $nin: [...following, id] } }).select("-password");
         res.status(200).json({ "message": "Found other users Successfully!", "users": otherUsers, success: true });
     } catch (error) {
         console.log(error);

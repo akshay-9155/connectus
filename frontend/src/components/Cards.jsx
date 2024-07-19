@@ -19,7 +19,7 @@ const Cards = ({user}) => {
         <div className="">
           <div className=" flex items-center gap-2">
             <span>{user?.name}</span>
-            {user?.followers.length > 1 && (
+            {user?.followers.length > 3 && (
               <MdVerified className="text-sky-400" />
             )}
           </div>
