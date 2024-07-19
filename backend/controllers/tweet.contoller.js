@@ -10,6 +10,9 @@ export const createTweet = async (req, res) => {
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ "message": "Invalid ID format", success: false });
         }
+        if (!description) {
+            return res.status(404).json({ "message": "Tweet can not be Empty", success: false });
+        }
         const newTweet = new Tweet();
         newTweet.description = description;
         newTweet.author = id;
@@ -86,7 +89,7 @@ export const GetAllTweet = async (req, res) => {
                 { "author": id },
                 { "author": { $in: loggedInUser.following } }
             ]
-        }).lean();
+        }).populate('author','-password, -bio').sort({createdAt: -1}).lean();
 
         res.status(200).json({ message: "All tweets found Successfully", Tweets: allTweets });
     } catch (error) {

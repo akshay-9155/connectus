@@ -9,7 +9,7 @@ const Home = () => {
   useGetOtherUsers();
   const { otherUser } = useSelector((state) => state.user);
   return (
-    <div className="flex justify-between min-h-screen w-[85%] mx-auto">
+    <div className="flex justify-between min-h-screen w-[85%] mx-auto select-none">
       <LeftSidebar />
       <Outlet />
       <RightSidebar otherUser={otherUser} />

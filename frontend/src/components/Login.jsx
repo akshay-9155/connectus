@@ -51,12 +51,12 @@ const Login = () => {
             withCredentials: true,
           }
         );
-        toast(response.data.message);
+        toast.success(response.data.message);
         // set LoggedInUser in store
         dispatch(getLoggedInUser(response?.data?.user))
         if (response.data.success) navigate("/");
       } catch (error) {
-        toast(error?.response?.data?.message || "Internal Server Error");
+        toast.error(error?.response?.data?.message || "Internal Server Error");
       }
     } else {
       try {
@@ -75,10 +75,10 @@ const Login = () => {
             withCredentials: true,
           }
         );
-        toast(response.data.message);
+        toast.success(response.data.message);
         if (response.data.success) loginSignupHandler();
       } catch (error) {
-        toast(error?.response?.data?.message || "Internal Server Error");
+        toast.error(error?.response?.data?.message || "Internal Server Error");
       }
     }
   };
