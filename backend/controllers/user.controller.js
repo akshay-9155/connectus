@@ -4,7 +4,7 @@ import { generateToken } from "../config/jwtAuthController.js";
 
 export const Register = async (req, res) => {
     try {
-        const { name, username, email, password } = req.body;
+        const { name, username, email, bio, password, profileImage, coverImage } = req.body;
         if (!name || !username || !email || !password) {
             return res.status(400).json({ "message": "All feilds are required!", success: false });
         }
@@ -20,7 +20,10 @@ export const Register = async (req, res) => {
         newUser.name = name;
         newUser.username = username;
         newUser.email = email;
+        newUser.bio = bio;
         newUser.password = password;
+        newUser.profileImage = profileImage;
+        newUser.coverImage = coverImage;
         const savedUser = await newUser.save();
 
         // const newUser = User.create({

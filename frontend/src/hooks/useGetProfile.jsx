@@ -12,6 +12,7 @@ const useGetProfile = (id) => {
           `${USER_API_ENDPOINT}/getOtherUserProfile/${id}`,
           { withCredentials: true }
         );
+        console.log(res?.data?.userProfile);
         dispatch(getProfile(res?.data?.userProfile));
       } catch (error) {
         console.log(error);

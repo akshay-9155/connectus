@@ -6,7 +6,7 @@ import useGetProfile from "../hooks/useGetProfile";
 import { useSelector } from "react-redux";
 
 const Profile = () => {
-  const { profile } = useSelector((state) => state.user);
+  const { loggedInUser, profile } = useSelector((state) => state.user);
   const {id} = useParams();
   useGetProfile(id);
 
@@ -33,11 +33,12 @@ const Profile = () => {
           </span>
         </div>
       </div>
-      <div className="w-full">
+      <div className="w-full min-h-32 max-h-40 overflow-hidden">
         <img
+        className=""
           src={
             profile.coverImage ||
-            "https://pbs.twimg.com/profile_banners/930267858227019776/1589661418/1080x360"
+            "https://img.freepik.com/free-vector/blank-user-circles_78370-4336.jpg?t=st=1721382103~exp=1721385703~hmac=e7d40823f98d6ba1037acb35954b8d27566bf23bdc128cc3d1ca39d0c38b5ece&w=1480"
           }
           alt="cover-img"
         />
@@ -47,14 +48,14 @@ const Profile = () => {
           <img
             src={
               profile.profileImage ||
-              "https://pbs.twimg.com/profile_images/1263137854416437254/Rr9nuVIu_400x400.jpg"
+              "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?ga=GA1.1.1883982623.1721382457&semt=sph"
             }
             alt="profile-photo"
           />
         </div>
         <div className="translate-y-4">
           <button className=" text-zinc-50 border-[1px] border-zinc-700 text-sm font-bold py-2 px-6 rounded-full">
-            Edit Profile
+            {id === loggedInUser?._id ? "Edit Profile" : "Follow"}
           </button>
         </div>
       </div>
