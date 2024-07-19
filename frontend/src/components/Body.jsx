@@ -14,7 +14,7 @@ const browserRouter = createBrowserRouter([
         element: <Feed/>
       },
       {
-        path: '/profile',
+        path: '/profile/:id',
         element: <Profile/>
       }
     ]

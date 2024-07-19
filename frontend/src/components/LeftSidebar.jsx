@@ -9,16 +9,19 @@ import {
   FaBookmark,
   FaSignOutAlt,
 } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
 const LeftSidebar = () => {
+  const {loggedInUser} = useSelector(state => state.user);
+
   const navbarItems = [
-    { name: "Home", icon: FaHome, to: '/' },
-    { name: "Explore", icon: FaSearch, to: '/profile' },
-    { name: "Notifications", icon: FaBell, to: '/profile' },
-    { name: "Profile", icon: FaUser, to: '/profile' },
-    { name: "Bookmarks", icon: FaBookmark, to: '/profile' },
-    { name: "Logout", icon: FaSignOutAlt, to: '/login' },
-    { name: "More", icon: CgMoreO, to: '/profile' },
+    { name: "Home", icon: FaHome, to: "/" },
+    { name: "Explore", icon: FaSearch, to: "/profile" },
+    { name: "Notifications", icon: FaBell, to: "/profile" },
+    { name: "Profile", icon: FaUser, to: `/profile/${loggedInUser?._id}` },
+    { name: "Bookmarks", icon: FaBookmark, to: "/profile" },
+    { name: "Logout", icon: FaSignOutAlt, to: "/login" },
+    { name: "More", icon: CgMoreO, to: "/profile" },
   ];
 
   return (

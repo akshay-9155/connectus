@@ -3,8 +3,13 @@ import axios from "axios";
 import { USER_API_ENDPOINT } from "../../utils/constants.jsx";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { getLoggedInUser } from "../redux/features/user/userSlice.jsx";
 
 const Login = () => {
+
+  const dispatch = useDispatch();
+
   // State to check whether user has an accout or not in order to toggle between login and signup
   const [haveAccount, setHaveAccount] = useState(true);
   // Navigator
@@ -47,6 +52,8 @@ const Login = () => {
           }
         );
         toast(response.data.message);
+        // set LoggedInUser in store
+        dispatch(getLoggedInUser(response?.data?.user))
         if (response.data.success) navigate("/");
       } catch (error) {
         toast(error?.response?.data?.message || "Internal Server Error");

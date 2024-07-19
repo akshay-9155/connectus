@@ -1,13 +1,14 @@
 import React from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { MdVerified } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import useGetProfile from "../hooks/useGetProfile";
 import { useSelector } from "react-redux";
 
 const Profile = () => {
-  useGetProfile();
-  const profile = useSelector((state) => state.user.profile);
+  const { profile } = useSelector((state) => state.user);
+  const {id} = useParams();
+  useGetProfile(id);
 
   if (!profile) {
     return <div>Loading...</div>; // Display a loading state while the profile is being fetched
@@ -35,17 +36,17 @@ const Profile = () => {
       <div className="w-full">
         <img
           src={
-            profile.bannerImageUrl ||
+            profile.coverImage ||
             "https://pbs.twimg.com/profile_banners/930267858227019776/1589661418/1080x360"
           }
-          alt="banner-img"
+          alt="cover-img"
         />
       </div>
       <div className="flex px-5 h-16 justify-between">
         <div className=" h-36 w-36 rounded-full overflow-hidden -translate-y-1/2 border-4 border-zinc-950">
           <img
             src={
-              profile.profileImageUrl ||
+              profile.profileImage ||
               "https://pbs.twimg.com/profile_images/1263137854416437254/Rr9nuVIu_400x400.jpg"
             }
             alt="profile-photo"

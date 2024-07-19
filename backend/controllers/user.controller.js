@@ -159,3 +159,21 @@ export const Follow = async (req, res) => {
         res.status(500).json({ "message": "Internal Server Error", success: false });
     }
 };
+
+export const getOtherUserProfile = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ "message": "Invalid ID format", success: false });
+        }
+        const userProfile = await User.findById(userId).select("-password");
+        if (!userProfile) {
+            return res.status(404).json({ "message": "User not found!", success: false });
+        }
+        return res.status(200).json({ "message": "User found!", "userProfile": userProfile, success: true });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ "message": "Internal Server Error", success: false });
+    }
+}
