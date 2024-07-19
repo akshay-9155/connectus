@@ -1,8 +1,10 @@
 import React from "react";
 import { CiImageOn } from "react-icons/ci";
 import Avatar from "react-avatar";
+import { useSelector } from 'react-redux';
 
 const CreatePost = () => {
+  const { loggedInUser } = useSelector((state) => state.user);
   return (
     <div className=" w-full border-b-[1px] border-zinc-800">
       <div className=" flex items-center border-b-[1px] cursor-pointer border-zinc-800 text-md">
@@ -18,7 +20,10 @@ const CreatePost = () => {
       <div className="p-4">
         <div className="w-full flex items-center gap-2">
           <Avatar
-            src="https://as2.ftcdn.net/v2/jpg/02/62/24/31/1000_F_262243135_q7xBjfg02gaeD1NVfIqHBLz3qrOMFYcw.jpg"
+            src={
+              `${loggedInUser?.profileImage}` ||
+              "https://as2.ftcdn.net/v2/jpg/02/62/24/31/1000_F_262243135_q7xBjfg02gaeD1NVfIqHBLz3qrOMFYcw.jpg"
+            }
             size="40"
             round={true}
             className="cursor-pointer"

@@ -26,7 +26,9 @@ const Profile = () => {
         <div>
           <div className="flex gap-2 items-center text-xl">
             <h3 className=" font-bold cursor-pointer">{profile.name}</h3>
-            <MdVerified className=" text-sky-500" />
+            {profile?.followers.length > 3 && (
+              <MdVerified className="text-sky-500" />
+            )}
           </div>
           <span className="font-semibold text-zinc-500">
             {profile.tweets.length} posts
@@ -35,7 +37,7 @@ const Profile = () => {
       </div>
       <div className="w-full min-h-32 max-h-40 overflow-hidden">
         <img
-        className=""
+          className=""
           src={
             profile.coverImage ||
             "https://img.freepik.com/free-vector/blank-user-circles_78370-4336.jpg?t=st=1721382103~exp=1721385703~hmac=e7d40823f98d6ba1037acb35954b8d27566bf23bdc128cc3d1ca39d0c38b5ece&w=1480"
