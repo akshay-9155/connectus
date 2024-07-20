@@ -1,7 +1,9 @@
 import React from "react";
 import { FaSearch } from "react-icons/fa";
 import Cards from "./Cards";
+import { useSelector } from "react-redux";
 const RightSidebar = ({ otherUser }) => {
+  const {loggedInUser} = useSelector(state => state.user);
   if (!otherUser) {
     return <div>Loading...</div>; // Display a loading state while the profile is being fetched
   }
@@ -26,7 +28,7 @@ const RightSidebar = ({ otherUser }) => {
       </div>
       <div className="mt-4 bg-zinc-900 rounded-xl p-3">
         <h2 className="text-xl tracking-wider font-bold mb-6">Followings</h2>
-        {otherUser.map(user => {
+        {loggedInUser?.following.map(user => {
           return <Cards key={user?._id} user = {user}/>
         })}
       </div>

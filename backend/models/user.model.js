@@ -32,12 +32,12 @@ const userSchema = new mongoose.Schema({
         default: ""
     },
     following: {
-        type: [],
-        required: true
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "User"
     },
     followers: {
-        type: [],
-        required: true
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "User"
     },
     tweets: {
         type: [mongoose.Schema.Types.ObjectId],

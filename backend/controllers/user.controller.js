@@ -47,7 +47,7 @@ export const Login = async (req, res) => {
         if (!email || !password) {
             return res.status(409).json({ "message": "All fields required!", success: false });
         }
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }).populate("following","name username profileImage followers");
         if (!user) {
             return res.status(404).json({ "message": "User not found", success: false });
         }
@@ -199,3 +199,4 @@ export const getUserProfile = async (req, res) => {
         res.status(500).json({ "message": "Internal Server Error", success: false });
     }
 }
+

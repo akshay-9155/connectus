@@ -57,7 +57,11 @@ const Profile = () => {
         </div>
         <div className="translate-y-4">
           <button className=" text-zinc-50 border-[1px] border-zinc-700 text-sm font-bold py-2 px-6 rounded-full">
-            {id === loggedInUser?._id ? "Edit Profile" : "Follow"}
+            {id === loggedInUser?._id
+              ? "Edit Profile"
+              : loggedInUser?.following.some((user) => user._id === id)
+              ? " Unfollow "
+              : "Follow"}
           </button>
         </div>
       </div>
