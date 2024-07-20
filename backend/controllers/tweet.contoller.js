@@ -54,26 +54,32 @@ export const likeOrDislike = async (req, res) => {
     try {
         const { tweetId } = req.params;
         const { id } = req.user;
-        // Ensure that id and userId are valid ObjectIds
+
+        // Validate IDs
         if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(tweetId)) {
-            return res.status(400).json({ "message": "Invalid ID format", success: false });
+            return res.status(400).json({ message: "Invalid ID format", success: false });
         }
+
+        // Check if tweet exists
         const tweet = await Tweet.findById(tweetId);
         if (!tweet) {
             return res.status(404).json({ message: "Tweet not found!", success: false });
         }
-        if (tweet.likes.includes(id)) {
-            const updatedTweet = await Tweet.findByIdAndUpdate(tweetId, { $pull: { "likes": id } }, { new: true });
-            return res.status(200).json({ message: "Disliked!", success: true, tweet: updatedTweet });
-        } else {
-            const updatedTweet = await Tweet.findByIdAndUpdate(tweetId, { $push: { "likes": id } }, { new: true });
-            return res.status(200).json({ message: "Liked!", success: true, tweet: updatedTweet });
-        }
+
+        // Toggle like/dislike
+        const updateOperation = tweet.likes.includes(id)
+            ? { $pull: { likes: id } }
+            : { $push: { likes: id } };
+
+        const updatedTweet = await Tweet.findByIdAndUpdate(tweetId, updateOperation, { new: true });
+
+        const message = tweet.likes.includes(id) ? "Disliked!" : "Liked!";
+        res.status(200).json({ message, success: true, tweet: updatedTweet });
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ "message": "Internal Server Error", success: false });
+        console.error('Error liking/disliking tweet:', error);
+        res.status(500).json({ message: "Internal Server Error", success: false });
     }
-}
+};
 
 export const GetAllTweet = async (req, res) => {
     try {

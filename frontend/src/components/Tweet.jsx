@@ -1,17 +1,47 @@
 import React from "react";
 import Avatar from "react-avatar";
-import { MdVerified } from "react-icons/md";
-import { LuDot } from "react-icons/lu";
-import { FaRegComment } from "react-icons/fa";
+import { MdVerified, MdDeleteOutline } from "react-icons/md";
+import { FaHeart, FaRegComment } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import { FaRegBookmark } from "react-icons/fa";
 import { RxDividerVertical } from "react-icons/rx";
 import { format } from "date-fns";
+import axios from "axios";
+import { TWEET_API_ENDPOINT } from "../../utils/constants";
+import { useDispatch } from "react-redux";
+import { setRefresh } from "../redux/features/tweets/tweetSlice";
+import { toast } from "react-hot-toast";
 
-const Tweet = ({ tweet }) => {
+const Tweet = ({ tweet, loggedInUser }) => {
+  const dispatch = useDispatch();
   const createdAt = new Date(tweet?.createdAt);
   const formattedDate = format(createdAt, "dd-MM-yyyy");
   const formattedTime = format(createdAt, "hh:mm:ss a");
+  const likeOrDislikeHandler = async () => {
+    try {
+      const res = await axios.put(
+        `${TWEET_API_ENDPOINT}/likeordislike/${tweet?._id}`,
+        {},
+        { withCredentials: true }
+      );
+      dispatch(setRefresh());
+      toast.success(res?.data?.message);
+    } catch (error) {
+      toast.error(error?.response?.data?.message);
+    }
+  };
+  const deleteTweetHandler = async () => {
+    try {
+      const res = await axios.delete(
+        `${TWEET_API_ENDPOINT}/delete/${tweet?._id}`,
+        { withCredentials: true }
+      );
+      dispatch(setRefresh());
+      toast.success(res?.data?.message);
+    } catch (error) {
+      toast.error(error?.response?.data?.message);
+    }
+  };
   return (
     <div className="w-full p-4 border-b-[1px] border-zinc-800">
       <div className="flex gap-2">
@@ -26,17 +56,27 @@ const Tweet = ({ tweet }) => {
             className="cursor-pointer"
           />
         </div>
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="font-bold">{tweet?.author?.name}</span>
-            {tweet?.author?.followers.length > 3 && (
-              <MdVerified className="text-sky-500" />
+        <div className=" w-full">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="font-bold">{tweet?.author?.name}</span>
+              {tweet?.author?.followers.length > 3 && (
+                <MdVerified className="text-sky-500" />
+              )}
+              <span className="text-zinc-400">@{tweet?.author?.username}</span>
+              <RxDividerVertical className="inline-block text-zinc-400" />
+              <span className="text-zinc-400">{formattedDate}</span>
+              <RxDividerVertical className="inline-block text-zinc-400" />
+              <span className="text-zinc-400">{formattedTime}</span>
+            </div>
+            {tweet?.author?._id === loggedInUser?._id && (
+              <div className="text-xl cursor-pointer rounded-full hover:bg-red-300 p-2 hover:text-yellow-900 ">
+                <MdDeleteOutline
+                  onClick={deleteTweetHandler}
+                  className=" text-2xl text-red-600"
+                />
+              </div>
             )}
-            <span className="text-zinc-400">@{tweet?.author?.username}</span>
-            <RxDividerVertical className="inline-block text-zinc-400" />
-            <span className="text-zinc-400">{formattedDate}</span>
-            <RxDividerVertical className="inline-block text-zinc-400" />
-            <span className="text-zinc-400">{formattedTime}</span>
           </div>
           <div>
             <p>{tweet?.description}</p>
@@ -52,7 +92,18 @@ const Tweet = ({ tweet }) => {
         </div>
         <div className="flex gap-2 items-center text-xl px-4 ">
           <div className="cursor-pointer rounded-full hover:bg-red-100 p-2 hover:text-red-900">
-            <FaRegHeart className="" />
+            {tweet?.likes.includes(loggedInUser?._id) ? (
+              <FaHeart
+                onClick={likeOrDislikeHandler}
+                className=" text-red-500"
+              />
+            ) : (
+              <FaRegHeart
+                onClick={likeOrDislikeHandler}
+                className=" text-red-500"
+              />
+            )}
+            {/* <FaRegHeart onClick={likeOrDislikeHandler} className="" /> */}
           </div>
           <p>{tweet?.likes.length}</p>
         </div>
