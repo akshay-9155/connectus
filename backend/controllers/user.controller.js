@@ -182,7 +182,7 @@ export const Follow = async (req, res) => {
     }
 };
 
-export const getOtherUserProfile = async (req, res) => {
+export const getUserProfile = async (req, res) => {
     try {
         const { userId } = req.params;
         if (!mongoose.Types.ObjectId.isValid(userId)) {

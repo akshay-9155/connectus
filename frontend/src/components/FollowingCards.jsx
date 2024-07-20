@@ -30,11 +30,9 @@ const Cards = ({ user }) => {
           </Link>
         </div>
         <div>
-          <Link to={`/profile/${user?._id}`}>
-            <button className="bg-zinc-50 text-zinc-950 text-sm font-bold py-1 px-3 rounded-full">
-              Profile
-            </button>
-          </Link>
+          <button className="bg-zinc-50 text-zinc-950 text-sm font-bold py-1 px-3 rounded-full">
+            Unfollow
+          </button>
         </div>
       </div>
     </div>

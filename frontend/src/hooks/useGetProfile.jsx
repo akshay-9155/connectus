@@ -9,7 +9,7 @@ const useGetProfile = (id) => {
     const fetchProfile = async () => {
       try {
         const res = await axios.get(
-          `${USER_API_ENDPOINT}/getOtherUserProfile/${id}`,
+          `${USER_API_ENDPOINT}/getUserProfile/${id}`,
           { withCredentials: true }
         );
         dispatch(getProfile(res?.data?.userProfile));
