@@ -21,17 +21,17 @@ const RightSidebar = ({ otherUser }) => {
         />
       </div>
       <div className="mt-4 bg-zinc-900 rounded-xl p-3">
-        <h2 className="text-xl tracking-wider font-bold mb-6">Who to follow</h2>
+        <h2 className="text-xl tracking-wider font-bold mb-6">People you may know</h2>
         {otherUser.map(user => {
           return <Cards key={user?._id} user = {user}/>
         })}
       </div>
-      {/* <div className="mt-4 bg-zinc-900 rounded-xl p-3">
+      <div className="mt-4 bg-zinc-900 rounded-xl p-3">
         <h2 className="text-xl tracking-wider font-bold mb-6">Followings</h2>
         {loggedInUser?.following.map(user => {
           return <Cards key={user?._id} user = {user}/>
         })}
-      </div> */}
+      </div>
     </div>
   );
 };
