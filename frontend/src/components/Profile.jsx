@@ -3,12 +3,31 @@ import { FaArrowLeft } from "react-icons/fa";
 import { MdVerified } from "react-icons/md";
 import { Link, useParams } from "react-router-dom";
 import useGetProfile from "../hooks/useGetProfile";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import { USER_API_ENDPOINT } from "../../utils/constants";
+import { followingUpdate } from "../redux/features/user/userSlice";
 
 const Profile = () => {
+  const dispatch = useDispatch();
   const { loggedInUser, profile } = useSelector((state) => state.user);
   const {id} = useParams();
   useGetProfile(id);
+  const handleFollowUnfollow = async () => {
+    try {
+      const response = await axios.put(
+        `${USER_API_ENDPOINT}/toggleFollow/${id}`,
+        {},
+        { withCredentials: true }
+      );
+      dispatch(followingUpdate(response?.data?.currentUser));
+      toast.success(response?.data?.message)
+    } catch (error) {
+      toast.error(error?.response?.data?.message);
+      console.log(error);
+    }
+  }
 
   if (!profile) {
     return <div>Loading...</div>; // Display a loading state while the profile is being fetched
@@ -56,13 +75,28 @@ const Profile = () => {
           />
         </div>
         <div className="translate-y-4">
-          <button className=" text-zinc-50 border-[1px] border-zinc-700 text-sm font-bold py-2 px-6 rounded-full">
-            {id === loggedInUser?._id
-              ? "Edit Profile"
-              : loggedInUser?.following.some((user) => user._id === id)
-              ? " Unfollow "
-              : "Follow"}
-          </button>
+          {id === loggedInUser?._id ? (
+            <button
+              onClick={() => console.log("Edit Profile")}
+              className=" text-zinc-50 border-[1px] border-zinc-700 text-sm font-bold py-2 px-6 rounded-full"
+            >
+              Edit Profile
+            </button>
+          ) : loggedInUser?.following.some((user) => user._id === id) ? (
+            <button
+              onClick={handleFollowUnfollow}
+              className=" text-zinc-50 border-[1px] border-zinc-700 text-sm font-bold py-2 px-6 rounded-full"
+            >
+              Unfollow
+            </button>
+          ) : (
+            <button
+              onClick={handleFollowUnfollow}
+              className=" text-zinc-50 border-[1px] border-zinc-700 text-sm font-bold py-2 px-6 rounded-full"
+            >
+              Follow
+            </button>
+          )}
         </div>
       </div>
       <div className="mt-5 px-4">

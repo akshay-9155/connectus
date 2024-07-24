@@ -47,7 +47,7 @@ export const Login = async (req, res) => {
         if (!email || !password) {
             return res.status(409).json({ "message": "All fields required!", success: false });
         }
-        const user = await User.findOne({ email }).populate("following","name username profileImage followers");
+        const user = await User.findOne({ email }).populate("following", "name username profileImage followers");
         if (!user) {
             return res.status(404).json({ "message": "User not found", success: false });
         }
@@ -122,25 +122,25 @@ export const Profile = async (req, res) => {
     }
 }
 
-// export const GetOtherUsers = async (req, res) => {
-//     try {
-//         const { id } = req.user;
-//         // Ensure that id and userId are valid ObjectIds
-//         if (!mongoose.Types.ObjectId.isValid(id)) {
-//             return res.status(400).json({ "message": "Invalid ID format", success: false });
-//         }
-//         const otherUsers = await User.find({ _id: { $ne: id } }).select("-password");
-//         res.status(200).json({ "message": "Found other users Successfully!", "users": otherUsers, success: true });
-//     } catch (error) {
-//         console.log(error);
-//         res.status(500).json({ "message": "Internal Server Error", success: false });
-//     }
-// }
+export const GetOtherUsers = async (req, res) => {
+    try {
+        const { id } = req.user;
+        // Ensure that id and userId are valid ObjectIds
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ "message": "Invalid ID format", success: false });
+        }
+        const otherUsers = await User.find({ _id: { $ne: id } }).select("-password");
+        res.status(200).json({ "message": "Found other users Successfully!", "users": otherUsers, success: true });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ "message": "Internal Server Error", success: false });
+    }
+}
 
 // Earlier in Who to follow section all the users are visible even those who are already followed by the current user.
 // Fixed this issue below. Above is the buggy version of code.
 
-export const GetOtherUsers = async (req, res) => {
+export const GetOtherUnfollowedUsers = async (req, res) => {
     try {
         const { id } = req.user;
         const { following } = await User.findById(id);
@@ -160,7 +160,6 @@ export const Follow = async (req, res) => {
     try {
         const { userId } = req.params;
         const { id } = req.user;
-
         // Ensure that id and userId are valid ObjectIds
         if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(userId)) {
             return res.status(400).json({ "message": "Invalid ID format", success: false });
@@ -168,12 +167,12 @@ export const Follow = async (req, res) => {
 
         const { following } = await User.findById(id);
         if (following.includes(userId)) {
-            const user = await User.findByIdAndUpdate(id, { $pull: { "following": userId } }, { new: true });
-            const userToFollow = await User.findByIdAndUpdate(userId, { $pull: { "followers": id } }, { new: true });
+            const user = await User.findByIdAndUpdate(id, { $pull: { "following": userId } }, { new: true }).populate("following", "name username profileImage followers");
+            const userToFollow = await User.findByIdAndUpdate(userId, { $pull: { "followers": id } }, { new: true }).populate("following", "name username profileImage followers");
             res.status(200).json({ "message": "Unfollowed!", "currentUser": user, "userToFollow": userToFollow, success: true });
         } else {
-            const user = await User.findByIdAndUpdate(id, { $push: { "following": userId } }, { new: true });
-            const userToFollow = await User.findByIdAndUpdate(userId, { $push: { "followers": id } }, { new: true });
+            const user = await User.findByIdAndUpdate(id, { $push: { "following": userId } }, { new: true }).populate("following", "name username profileImage followers");
+            const userToFollow = await User.findByIdAndUpdate(userId, { $push: { "followers": id } }, { new: true }).populate("following", "name username profileImage followers");
             res.status(200).json({ "message": "Followed Successfully", "currentUser": user, "userToFollow": userToFollow, success: true });
         }
     } catch (error) {
@@ -181,6 +180,61 @@ export const Follow = async (req, res) => {
         res.status(500).json({ "message": "Internal Server Error", success: false });
     }
 };
+
+export const ToggleFollow = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { id } = req.user;
+
+        // Validate ObjectIds
+        if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(userId)) {
+            console.log(`Invalid ID format. currentUserId: ${id}, targetUserId: ${userId}`);
+            return res.status(400).json({ message: "Invalid ID format", success: false });
+        }
+
+        const currentUser = await User.findById(id);
+        const targetUser = await User.findById(userId);
+
+        if (!currentUser || !targetUser) {
+            console.log(`User not found. currentUserId: ${id}, targetUserId: ${userId}`);
+            return res.status(404).json({ message: "User not found!", success: false });
+        }
+
+        let message;
+        if (currentUser.following.includes(userId)) {
+            // Unfollow logic
+            currentUser.following = currentUser.following.filter(followingId => followingId.toString() !== userId.toString());
+            targetUser.followers = targetUser.followers.filter(followerId => followerId.toString() !== id.toString());
+            message = "Unfollowed Successfully";
+        } else {
+            // Follow logic
+            currentUser.following.push(userId);
+            targetUser.followers.push(id);
+            message = "Followed Successfully";
+        }
+
+        // Save the updates to the database
+        await currentUser.save();
+        await targetUser.save();
+
+        // Populate the updated currentUser and targetUser
+        const populatedCurrentUser = await User.findById(id).populate("following", "name username profileImage followers");
+        const populatedTargetUser = await User.findById(userId).populate("following", "name username profileImage followers");
+
+        res.status(200).json({
+            message,
+            currentUser: populatedCurrentUser,
+            targetUser: populatedTargetUser,
+            success: true
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error", success: false });
+    }
+};
+
+// const currentUser = await User.findByIdAndUpdate(id, { $pull: { "following": userId } }, { new: true }).populate("following", "name username profileImage followers");
+// const userToFollow = await User.findByIdAndUpdate(userId, { $pull: { "followers": id } }, { new: true }).populate("following", "name username profileImage followers");
 
 export const getUserProfile = async (req, res) => {
     try {
