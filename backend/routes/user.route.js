@@ -1,5 +1,5 @@
 import express from "express";
-import { Bookmark, Follow, getUserProfile, GetOtherUsers, Login, Logout, Profile, Register, GetOtherUnfollowedUsers, ToggleFollow } from "../controllers/user.controller.js";
+import { Bookmark, Follow, getUserProfile, GetOtherUsers, Login, Logout, Profile, Register, GetOtherUnfollowedUsers, ToggleFollow, DeleteUser } from "../controllers/user.controller.js";
 import { jwtTokenAuthentication } from "../config/jwtAuthController.js";
 const router = express.Router();
 router.post("/register", Register);
@@ -12,5 +12,6 @@ router.get("/getOtherUsers", jwtTokenAuthentication, GetOtherUsers);
 router.put("/toggleFollow/:userId", jwtTokenAuthentication, ToggleFollow);
 router.get("/getUserProfile/:userId", jwtTokenAuthentication, getUserProfile);
 router.get("/getOtherUnfollowedUsers", jwtTokenAuthentication, GetOtherUnfollowedUsers);
+router.delete("/deleteAccount", jwtTokenAuthentication, DeleteUser);
 
 export default router;

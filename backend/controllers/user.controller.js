@@ -254,3 +254,20 @@ export const getUserProfile = async (req, res) => {
     }
 }
 
+export const DeleteUser =  async (req, res) => {
+    try {
+        const { id } = req.user;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ "message": "Invalid ID format", success: false });
+        }
+        const deletedUser = await User.findByIdAndDelete(id);
+        if (!deletedUser) {
+            return res.status(404).json({ "message": "User not found!", success: false });
+        }
+        res.status(200).json({ "message": "Account gone, memories remain", "deletedUser":deletedUser});
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ "message": "Internal Server Error", success: false });
+    }
+
+}
