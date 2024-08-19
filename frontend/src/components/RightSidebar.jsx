@@ -2,10 +2,23 @@ import React from "react";
 import { FaSearch } from "react-icons/fa";
 import Cards from "./Cards";
 import { useSelector } from "react-redux";
-const RightSidebar = ({ otherUser }) => {
-  const {loggedInUser} = useSelector(state => state.user);
+import useGetOtherUnfollowedUsers from "../hooks/useGetOtherUnfollowedUsers";
+import ReactLoading from "react-loading";
+
+const RightSidebar = () => {
+  useGetOtherUnfollowedUsers();
+  const {loggedInUser, otherUser} = useSelector(state => state.user);
   if (!otherUser) {
-    return <div>Loading...</div>; // Display a loading state while the profile is being fetched
+    return (
+      <div className="w-full flex justify-center">
+        <ReactLoading
+          type="spinningBubbles"
+          color="#1A8CF1"
+          height={"20%"}
+          width={"20%"}
+        />
+      </div>
+    ); // Display a loading state while the profile is being fetched
   }
 
   return (

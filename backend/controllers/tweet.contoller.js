@@ -113,7 +113,7 @@ export const getFollowingTweets =  async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
         if(!loggedInUser.following.length){
-            return res.status(404).json({ message: "User not following anyone!" });
+            return res.status(200).json({ message: "User not following anyone!", followingTweets: [] });
         }
         const followingTweets = await Tweet.find({ "author": { $in: loggedInUser.following } }).populate('author', '-password, -bio').sort({ createdAt: -1 }).lean();
         res.status(200).json({ message: "Following tweets found Successfully", followingTweets: followingTweets});

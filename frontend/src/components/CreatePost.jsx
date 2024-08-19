@@ -3,7 +3,6 @@ import { CiImageOn } from "react-icons/ci";
 import Avatar from "react-avatar";
 import axios from "axios";
 import { TWEET_API_ENDPOINT } from "../../utils/constants";
-import useGetTweets from "../hooks/useGetTweets";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsActive, setRefresh } from "../redux/features/tweets/tweetSlice";

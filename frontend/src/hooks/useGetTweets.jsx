@@ -6,8 +6,9 @@ import { getAllTweets } from "../redux/features/tweets/tweetSlice";
 
 const useGetTweets = async () => {
   const { refresh, isActive } = useSelector((state) => state.tweet);
+  const {loggedInUser} = useSelector(state=>state.user);
   const dispatch = useDispatch();
-  
+  if(!loggedInUser) return;
   useEffect(() => {
     const fetchAllTweets = async () => {
       try {

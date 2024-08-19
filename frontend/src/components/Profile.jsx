@@ -7,7 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { USER_API_ENDPOINT } from "../../utils/constants";
-import { followingUpdate } from "../redux/features/user/userSlice";
+import { followingUpdate, setOtherUserUpdate } from "../redux/features/user/userSlice";
+import ReactLoading from 'react-loading';
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -22,6 +23,7 @@ const Profile = () => {
         { withCredentials: true }
       );
       dispatch(followingUpdate(response?.data?.currentUser));
+      dispatch(setOtherUserUpdate())
       toast.success(response?.data?.message)
     } catch (error) {
       toast.error(error?.response?.data?.message);
@@ -30,7 +32,16 @@ const Profile = () => {
   }
 
   if (!profile) {
-    return <div>Loading...</div>; // Display a loading state while the profile is being fetched
+    return (
+      <div className="w-full flex justify-center">
+        <ReactLoading
+          type="spinningBubbles"
+          color="#1A8CF1"
+          height={"20%"}
+          width={"20%"}
+        />
+      </div>
+    ); // Display a loading state while the profile is being fetched
   }
 
   return (

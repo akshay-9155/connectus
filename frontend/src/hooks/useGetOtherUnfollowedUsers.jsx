@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getOtherUser } from "../redux/features/user/userSlice";
 
 const useGetOtherUnfollowedUsers = () => {
-  const { loggedInUser } = useSelector((state) => state.user);
+  const { otherUserUpdate } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   useEffect(() => {
     const fetchOtherUsers = async () => {
@@ -22,7 +22,7 @@ const useGetOtherUnfollowedUsers = () => {
       }
     };
     fetchOtherUsers();
-  }, [loggedInUser]);
+  }, [otherUserUpdate]);
 };
 
 export default useGetOtherUnfollowedUsers;

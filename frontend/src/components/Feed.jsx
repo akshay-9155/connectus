@@ -3,16 +3,51 @@ import CreatePost from "./CreatePost";
 import Tweet from "./Tweet";
 import useGetTweets from "../hooks/useGetTweets";
 import { useSelector } from "react-redux";
+import Cards from "./Cards";
+import ReactLoading from "react-loading";
 
 const Feed = () => {
-  const { loggedInUser } = useSelector((state) => state.user);
+  const { loggedInUser, otherUser } = useSelector((state) => state.user);
+  
   useGetTweets();
   const { allTweets } = useSelector(state => state.tweet)
 
   if(!allTweets){
     return (
-      <div>Loading</div>
-    )
+      <div className="w-full flex justify-center">
+        <ReactLoading
+          type="spinningBubbles"
+          color="#1A8CF1"
+          height={"20%"}
+          width={"20%"}
+        />
+      </div>
+    );
+  }else if(allTweets.length == 0){
+    return (
+      <div className="border-x-[1px] border-zinc-800 w-[50%] h-screen overflow-y-auto mx-8">
+        <CreatePost loggedInUser={loggedInUser} />
+        <div className="mt-4 bg-zinc-900 rounded-xl p-3">
+          <h2 className="text-xl tracking-wider font-bold mb-6">
+            People you may know
+          </h2>
+          {otherUser ? (
+            otherUser.map((user) => {
+              return <Cards key={user?._id} user={user} />;
+            })
+          ) : (
+            <div className="w-full flex justify-center">
+              <ReactLoading
+                type="spinningBubbles"
+                color="#1A8CF1"
+                height={"20%"}
+                width={"20%"}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    );
   }
   
   return (

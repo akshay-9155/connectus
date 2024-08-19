@@ -5,18 +5,14 @@ import { FaHeart, FaRegComment } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import { FaRegBookmark } from "react-icons/fa";
 import { RxDividerVertical } from "react-icons/rx";
-import { format } from "date-fns";
 import axios from "axios";
-import { TWEET_API_ENDPOINT } from "../../utils/constants";
+import { timeSince, TWEET_API_ENDPOINT } from "../../utils/constants";
 import { useDispatch } from "react-redux";
 import { setRefresh } from "../redux/features/tweets/tweetSlice";
 import { toast } from "react-hot-toast";
 
 const Tweet = ({ tweet, loggedInUser }) => {
   const dispatch = useDispatch();
-  const createdAt = new Date(tweet?.createdAt);
-  const formattedDate = format(createdAt, "dd-MM-yyyy");
-  const formattedTime = format(createdAt, "hh:mm:ss a");
   const likeOrDislikeHandler = async () => {
     try {
       const res = await axios.put(
@@ -65,9 +61,8 @@ const Tweet = ({ tweet, loggedInUser }) => {
               )}
               <span className="text-zinc-400">@{tweet?.author?.username}</span>
               <RxDividerVertical className="inline-block text-zinc-400" />
-              <span className="text-zinc-400">{formattedDate}</span>
-              <RxDividerVertical className="inline-block text-zinc-400" />
-              <span className="text-zinc-400">{formattedTime}</span>
+              <span className="text-zinc-400">{timeSince(tweet?.createdAt)}</span>
+              
             </div>
             {tweet?.author?._id === loggedInUser?._id && (
               <div className="text-xl cursor-pointer rounded-full hover:bg-red-300 p-2 hover:text-yellow-900 ">
