@@ -1,4 +1,6 @@
 import { User } from "../models/user.model.js";
+import { Tweet } from "../models/tweet.model.js";
+
 import mongoose from "mongoose";
 import { generateToken } from "../config/jwtAuthController.js";
 
@@ -91,11 +93,11 @@ export const Bookmark = async (req, res) => {
             return res.status(404).json({ message: "User not found!", success: false });
         }
         if (user.bookmarks.includes(tweetId)) {
-            const updatedUser = await User.findByIdAndUpdate(id, { $pull: { "bookmarks": tweetId } }, { new: true })
-            return res.status(200).json({ "message": "Bookmark removed", success: true })
+            const updatedUser = await User.findByIdAndUpdate(id, { $pull: { "bookmarks": tweetId } }, { new: true }).populate("following", "name username profileImage followers");
+            return res.status(200).json({ "message": "Bookmark removed", updatedUser: updatedUser, success: true })
         } else {
-            const updatedUser = await User.findByIdAndUpdate(id, { $push: { "bookmarks": tweetId } }, { new: true })
-            return res.status(200).json({ "message": "Bookmark added", success: true })
+            const updatedUser = await User.findByIdAndUpdate(id, { $push: { "bookmarks": tweetId } }, { new: true }).populate("following", "name username profileImage followers");
+            return res.status(200).json({ "message": "Bookmark added", updatedUser: updatedUser, success: true })
         }
     } catch (error) {
         console.log(error);
@@ -254,20 +256,35 @@ export const getUserProfile = async (req, res) => {
     }
 }
 
-export const DeleteUser =  async (req, res) => {
+export const DeleteUser = async (req, res) => {
     try {
         const { id } = req.user;
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ "message": "Invalid ID format", success: false });
-        }
-        const deletedUser = await User.findByIdAndDelete(id);
-        if (!deletedUser) {
-            return res.status(404).json({ "message": "User not found!", success: false });
-        }
-        res.status(200).json({ "message": "Account gone, memories remain", "deletedUser":deletedUser});
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ "message": "Internal Server Error", success: false });
-    }
 
-}
+        // Check for valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid ID format", success: false });
+        }
+
+        // Find and delete the user
+        const deletedUser = await User.findByIdAndDelete(id);
+
+        // If user not found
+        if (!deletedUser) {
+            return res.status(404).json({ message: "User not found!", success: false });
+        }
+
+        // Delete associated tweets
+        const deletedTweets = await Tweet.deleteMany({ _id: { $in: deletedUser.tweets } });
+
+        // Respond with success message
+        return res.status(200).json({
+            message: "Account gone, memories remain",
+            success: true,
+            deletedUser,
+            deletedTweets,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error", success: false });
+    }
+};
