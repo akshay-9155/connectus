@@ -70,7 +70,7 @@ const CreatePost = ({ loggedInUser }) => {
           <Avatar
             src={
               `${loggedInUser?.profileImage}` ||
-              "https://as2.ftcdn.net/v2/jpg/02/62/24/31/1000_F_262243135_q7xBjfg02gaeD1NVfIqHBLz3qrOMFYcw.jpg"
+              "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?ga=GA1.1.1883982623.1721382457&semt=sph"
             }
             size="40"
             round={true}

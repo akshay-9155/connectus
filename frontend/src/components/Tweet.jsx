@@ -46,9 +46,12 @@ const Tweet = ({ tweet, loggedInUser }) => {
   };
   function handleTweetDeleteConfirm() {
     showConfirm("Are you sure?", {
-      description: "Delete Tweet?",
+      description: "You want to delete the tweet?",
       type: "warning",
       icon: <MdDelete />,
+      animation: "slide-up",
+      confirmLabel: "DELETE TWEET",
+      cancelLabel: "CANCEL",
     }).then((answer) => {
       if (answer) {
         deleteTweetHandler();

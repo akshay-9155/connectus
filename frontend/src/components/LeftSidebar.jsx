@@ -32,6 +32,9 @@ const LeftSidebar = () => {
       description: "This action cannot be undone.",
       type: "warning",
       icon: <MdDelete />,
+      animation: "slide-up",
+      confirmLabel: "DELETE",
+      cancelLabel: "CANCEL"
     }).then((answer) => {
       if (answer) {
         deleteAccount();
@@ -43,6 +46,9 @@ const LeftSidebar = () => {
       description: "You really want to Logout!",
       type: "info",
       icon: <FaSignOutAlt />,
+      animation: "slide-up",
+      confirmLabel: "LOGOUT",
+      cancelLabel: "CANCEL"
     }).then((answer) => {
       if (answer) {
         handleLogout();
