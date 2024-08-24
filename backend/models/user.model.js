@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
     },
     bio: {
         type: String,
-        default: ""
+        default: "Describe yourself here!"
     },
     password: {
         type: String,

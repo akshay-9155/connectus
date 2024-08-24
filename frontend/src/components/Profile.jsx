@@ -115,7 +115,7 @@ const Profile = () => {
         <span className=" text-zinc-500">@{profile.username}</span>
         <p className="mt-5">
           {profile.bio ||
-            "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Voluptatem, iusto distinctio non officiis aliquid quasi qui dolorum rerum quae placeat!"}
+            "Describe yourself here!!"}
         </p>
       </div>
     </div>
