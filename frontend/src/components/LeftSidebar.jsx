@@ -21,7 +21,7 @@ const LeftSidebar = () => {
   const navbarItems = [
     { name: "Home", icon: FaHome, to: "/" },
     { name: "Profile", icon: FaUser, to: `/profile/${loggedInUser?._id}` },
-    { name: "Bookmarks", icon: FaBookmark, to: "/profile" },
+    { name: "Bookmarks", icon: FaBookmark, to: "/bookmarks" },
     { name: "Logout", icon: FaSignOutAlt, to: "" },
   ];
 

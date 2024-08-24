@@ -13,7 +13,7 @@ const Home = () => {
     }
   },[])
   return (
-    <div className="flex justify-between min-h-screen w-[85%] mx-auto ">
+    <div className="flex justify-between min-h-screen w-[85%] mx-auto cursor-default">
       {loggedInUser ? (
         <>
           <LeftSidebar />

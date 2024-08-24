@@ -49,7 +49,7 @@ export const Login = async (req, res) => {
         if (!email || !password) {
             return res.status(409).json({ "message": "All fields required!", success: false });
         }
-        const user = await User.findOne({ email }).populate("following", "name username profileImage followers");
+        const user = await User.findOne({ email }).populate("following", "name username profileImage followers").populate({path:"bookmarks", populate: "author"});
         if (!user) {
             return res.status(404).json({ "message": "User not found", success: false });
         }
@@ -93,10 +93,10 @@ export const Bookmark = async (req, res) => {
             return res.status(404).json({ message: "User not found!", success: false });
         }
         if (user.bookmarks.includes(tweetId)) {
-            const updatedUser = await User.findByIdAndUpdate(id, { $pull: { "bookmarks": tweetId } }, { new: true }).populate("following", "name username profileImage followers");
+            const updatedUser = await User.findByIdAndUpdate(id, { $pull: { "bookmarks": tweetId } }, { new: true }).populate("following", "name username profileImage followers").populate({path:"bookmarks", populate: "author"});
             return res.status(200).json({ "message": "Bookmark removed", updatedUser: updatedUser, success: true })
         } else {
-            const updatedUser = await User.findByIdAndUpdate(id, { $push: { "bookmarks": tweetId } }, { new: true }).populate("following", "name username profileImage followers");
+            const updatedUser = await User.findByIdAndUpdate(id, { $push: { "bookmarks": tweetId } }, { new: true }).populate("following", "name username profileImage followers").populate({path:"bookmarks", populate: "author"});
             return res.status(200).json({ "message": "Bookmark added", updatedUser: updatedUser, success: true })
         }
     } catch (error) {

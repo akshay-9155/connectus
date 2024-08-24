@@ -4,6 +4,7 @@ import Home from './Home'
 import Login from './Login'
 import Profile from './Profile'
 import Feed from './Feed'
+import Bookmark from './Bookmark'
 const browserRouter = createBrowserRouter([
   {
     path: '/',
@@ -16,6 +17,10 @@ const browserRouter = createBrowserRouter([
       {
         path: '/profile/:id',
         element: <Profile/>
+      },
+      {
+        path: '/bookmarks',
+        element: <Bookmark/>
       }
     ]
   },
