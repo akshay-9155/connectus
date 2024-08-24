@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { FaHome, FaUser, FaBookmark, FaSignOutAlt } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { USER_API_ENDPOINT } from "../../utils/constants";
 import {
@@ -12,6 +13,7 @@ import {
   getProfile,
 } from "../redux/features/user/userSlice";
 import { getAllTweets } from "../redux/features/tweets/tweetSlice";
+import { showConfirm } from "react-confirm-prompt";
 
 const LeftSidebar = () => {
   const { loggedInUser } = useSelector((state) => state.user);
@@ -24,6 +26,29 @@ const LeftSidebar = () => {
     { name: "Bookmarks", icon: FaBookmark, to: "/bookmarks" },
     { name: "Logout", icon: FaSignOutAlt, to: "" },
   ];
+
+  function handleAccountDeleteConfirm() {
+    showConfirm("Are you sure?", {
+      description: "This action cannot be undone.",
+      type: "warning",
+      icon: <MdDelete />,
+    }).then((answer) => {
+      if (answer) {
+        deleteAccount();
+      } else return;
+    });
+  }
+  function handleLogoutConfirm() {
+    showConfirm("Are you sure?", {
+      description: "You really want to Logout!",
+      type: "info",
+      icon: <FaSignOutAlt />,
+    }).then((answer) => {
+      if (answer) {
+        handleLogout();
+      } else return;
+    });
+  }
 
   const handleLogout = async () => {
     try {
@@ -91,7 +116,7 @@ const LeftSidebar = () => {
         {navbarItems.map((item, index) => (
           <li key={index}>
             <Link
-              onClick={item.name === "Logout" && handleLogout}
+              onClick={item.name === "Logout" && handleLogoutConfirm}
               to={item.to}
               className="flex items-center gap-2 my-4 rounded-full w-fit pl-3 pr-4 py-2 hover:bg-zinc-800"
             >
@@ -116,13 +141,13 @@ const LeftSidebar = () => {
           <div className="absolute left-0 mt-2 bg-zinc-800 text-white rounded-lg shadow-lg z-10 w-full">
             <ul className="flex flex-col gap-1 py-2">
               <li
-                onClick={deleteAccount}
+                onClick={handleAccountDeleteConfirm}
                 className="cursor-pointer hover:bg-zinc-700 px-4 py-2 rounded-lg"
               >
                 Delete Account
               </li>
               <li
-                onClick={handleLogout}
+                onClick={handleLogoutConfirm}
                 className="cursor-pointer hover:bg-zinc-700 px-4 py-2 rounded-lg"
               >
                 Logout

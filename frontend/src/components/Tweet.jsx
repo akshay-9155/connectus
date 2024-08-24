@@ -1,6 +1,6 @@
 import React from "react";
 import Avatar from "react-avatar";
-import { MdVerified, MdDeleteOutline } from "react-icons/md";
+import { MdVerified, MdDeleteOutline, MdDelete } from "react-icons/md";
 import { FaBookmark, FaHeart, FaRegComment } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import { FaRegBookmark } from "react-icons/fa";
@@ -15,6 +15,7 @@ import { useDispatch } from "react-redux";
 import { setRefresh } from "../redux/features/tweets/tweetSlice";
 import { toast } from "react-hot-toast";
 import { getLoggedInUser } from "../redux/features/user/userSlice";
+import { showConfirm } from "react-confirm-prompt";
 
 const Tweet = ({ tweet, loggedInUser }) => {
   const dispatch = useDispatch();
@@ -43,6 +44,17 @@ const Tweet = ({ tweet, loggedInUser }) => {
       toast.error(error?.response?.data?.message);
     }
   };
+  function handleTweetDeleteConfirm() {
+    showConfirm("Are you sure?", {
+      description: "Delete Tweet?",
+      type: "warning",
+      icon: <MdDelete />,
+    }).then((answer) => {
+      if (answer) {
+        deleteTweetHandler();
+      } else return;
+    });
+  }
   const bookmarkHandler = async () => {
     try {
       const res = await axios.put(
@@ -90,7 +102,7 @@ const Tweet = ({ tweet, loggedInUser }) => {
             {tweet?.author?._id === loggedInUser?._id && (
               <div className="text-xl cursor-pointer rounded-full hover:bg-red-300 p-2 hover:text-yellow-900 ">
                 <MdDeleteOutline
-                  onClick={deleteTweetHandler}
+                  onClick={handleTweetDeleteConfirm}
                   className=" text-2xl text-red-600"
                 />
               </div>
@@ -126,7 +138,9 @@ const Tweet = ({ tweet, loggedInUser }) => {
           <p>{tweet?.likes?.length}</p>
         </div>
         <div className="text-xl cursor-pointer rounded-full hover:bg-yellow-100 p-2 hover:text-yellow-900">
-          {loggedInUser?.bookmarks.some(bookmark => bookmark._id === tweet._id) ? (
+          {loggedInUser?.bookmarks.some(
+            (bookmark) => bookmark._id === tweet._id
+          ) ? (
             <FaBookmark
               onClick={bookmarkHandler}
               className=" text-yellow-500"
