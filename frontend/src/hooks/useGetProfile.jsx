@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { USER_API_ENDPOINT } from '../../utils/constants';
 import { useEffect } from 'react';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import { getProfile } from '../redux/features/user/userSlice';
 const useGetProfile = (id) => {
+  const {refreshProfile} = useSelector(state => state.user);
   const dispatch = useDispatch();
   useEffect(()=>{
     const fetchProfile = async () => {
@@ -18,6 +19,6 @@ const useGetProfile = (id) => {
       }
     };
     fetchProfile();
-  },[id])
+  },[id, refreshProfile])
 }
 export default useGetProfile;

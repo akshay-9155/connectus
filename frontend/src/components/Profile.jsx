@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { MdVerified } from "react-icons/md";
 import { Link, useParams } from "react-router-dom";
@@ -9,8 +9,10 @@ import { toast } from "react-hot-toast";
 import { USER_API_ENDPOINT } from "../../utils/constants";
 import { followingUpdate, setOtherUserUpdate } from "../redux/features/user/userSlice";
 import ReactLoading from 'react-loading';
+import EditProfile from "./EditProfile";
 
 const Profile = () => {
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const dispatch = useDispatch();
   const { loggedInUser, profile } = useSelector((state) => state.user);
   const {id} = useParams();
@@ -88,7 +90,7 @@ const Profile = () => {
         <div className="translate-y-4">
           {id === loggedInUser?._id ? (
             <button
-              onClick={() => console.log("Edit Profile")}
+              onClick={() => setIsEditProfileOpen(true)}
               className=" text-zinc-50 border-[1px] border-zinc-700 text-sm font-bold py-2 px-6 rounded-full"
             >
               Edit Profile
@@ -113,11 +115,11 @@ const Profile = () => {
       <div className="mt-5 px-4">
         <h3 className="text-xl font-bold">{profile.name}</h3>
         <span className=" text-zinc-500">@{profile.username}</span>
-        <p className="mt-5">
-          {profile.bio ||
-            "Describe yourself here!!"}
-        </p>
+        <p className="mt-5">{profile.bio || "Describe yourself here!!"}</p>
       </div>
+      {isEditProfileOpen && (
+        <EditProfile onClose={() => setIsEditProfileOpen(false)} profileInfo= {profile} />
+      )}
     </div>
   );
 };

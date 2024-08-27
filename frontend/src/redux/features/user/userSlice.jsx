@@ -6,6 +6,7 @@ export const userSlice = createSlice({
     otherUser: null,
     profile: null,
     otherUserUpdate: false,
+    refreshProfile: false
   },
   reducers: {
     //  multiple actions
@@ -24,6 +25,9 @@ export const userSlice = createSlice({
     setOtherUserUpdate: (state) => {
       state.otherUserUpdate = !state.otherUserUpdate;
     },
+    refreshProfile: (state) => {
+      state.refreshProfile = !state.refreshProfile;
+    }
   },
 });
 
@@ -33,5 +37,6 @@ export const {
   getProfile,
   followingUpdate,
   setOtherUserUpdate,
+  refreshProfile
 } = userSlice.actions;
 export default userSlice.reducer;
