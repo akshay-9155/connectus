@@ -9,43 +9,62 @@ const EditProfile = ({ onClose, profileInfo }) => {
   // State to manage the form inputs
   const [name, setName] = useState(profileInfo.name || "");
   const [bio, setBio] = useState(profileInfo.bio || "");
-  const [profileImage, setProfileImage] = useState(profileInfo.profileImage || "");
-  const [coverImage, setCoverImage] = useState(profileInfo.coverImage || "");
+  const [profileImage, setProfileImage] = useState(null); // Store the File object
+  const [profileImagePreview, setProfileImagePreview] = useState(
+    profileInfo.profileImage || ""
+  ); // For image preview
+  const [coverImage, setCoverImage] = useState(null); // Store the File object
+  const [coverImagePreview, setCoverImagePreview] = useState(
+    profileInfo.coverImage || ""
+  ); // For image preview
 
   const dispatch = useDispatch();
-  
 
   const handleProfileImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setProfileImage(URL.createObjectURL(file)); // Preview the profile image
+      setProfileImage(file); // Store the File object
+      setProfileImagePreview(URL.createObjectURL(file)); // Set the preview URL
     }
   };
 
   const handleCoverImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setCoverImage(URL.createObjectURL(file)); // Preview the cover image
+      setCoverImage(file); // Store the File object
+      setCoverImagePreview(URL.createObjectURL(file)); // Set the preview URL
     }
   };
 
   const handleSaveProfile = async () => {
     try {
-      const res = await axios.put(
-        `${USER_API_ENDPOINT}/updateUser`,
-        { name, bio, profileImage, coverImage },
-        { withCredentials: true }
-      );
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("bio", bio);
+
+      if (profileImage) {
+        formData.append("profileImage", profileImage); // Append profile image if it’s selected
+      }
+
+      if (coverImage) {
+        formData.append("coverImage", coverImage); // Append cover image if it’s selected
+      }
+
+      const res = await axios.put(`${USER_API_ENDPOINT}/updateUser`, formData, {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" }, // Specify multipart content type
+      });
 
       toast.success(res?.data?.message || "Profile updated successfully!");
-
-      console.log(res?.data);
 
       dispatch(refreshProfile());
       onClose();
     } catch (error) {
       console.error("Error saving profile:", error);
-      toast.error(error?.response?.data?.message || "Something went wrong updating the profile.");
+      toast.error(
+        error?.response?.data?.message ||
+          "Something went wrong updating the profile."
+      );
     }
   };
 
@@ -63,9 +82,9 @@ const EditProfile = ({ onClose, profileInfo }) => {
             className="w-full mt-2 text-gray-300"
             onChange={handleProfileImageChange}
           />
-          {profileImage && (
+          {profileImagePreview && (
             <img
-              src={profileImage}
+              src={profileImagePreview}
               alt="Profile Preview"
               className="mt-4 w-24 h-24 rounded-full object-cover"
             />
@@ -81,9 +100,9 @@ const EditProfile = ({ onClose, profileInfo }) => {
             className="w-full mt-2 text-gray-300"
             onChange={handleCoverImageChange}
           />
-          {coverImage && (
+          {coverImagePreview && (
             <img
-              src={coverImage}
+              src={coverImagePreview}
               alt="Cover Preview"
               className="mt-4 w-full h-32 object-cover rounded-lg"
             />

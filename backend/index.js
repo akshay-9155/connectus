@@ -1,36 +1,23 @@
-import express from 'express';
 import dotenv from 'dotenv';
-import cookieParser from 'cookie-parser';
+import { app } from './app.js';
 import databaseConnection from './config/database.js';
-import userRoutes from './routes/user.route.js';
-import tweetRoutes from './routes/tweet.route.js';
-import { jwtTokenAuthentication } from './config/jwtAuthController.js';
-import cors from 'cors';
-
-dotenv.config();
-
-// Connecting DATABASE
-databaseConnection();
-
-const app = express();
-
-// middlewares
-app.use(express.urlencoded({
-    extended: true
-}))
-app.use(express.json());
-app.use(cookieParser());
-var corsOptions = {
-    origin: 'http://localhost:5173',
-    credentials: true
-};
-app.use(cors(corsOptions));
-
-// APIs
-app.use("/api/v1/user", userRoutes);
-app.use("/api/v1/tweet", jwtTokenAuthentication, tweetRoutes);
-
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-    console.log(`Server is running at http://localhost:${port}`);
-})
+try {
+    dotenv.config({ path: "./.env" });
+    console.log("dotenv loaded");
+} catch (error) {
+    console.log(error);
+}
+databaseConnection()
+    .then(() => {
+        app.on("error", (error) => {
+            console.log("Error : ", error);
+            throw error;
+        })
+        app.listen(process.env.PORT || 8000, () => {
+            console.log(` Server is running at http://localhost:${process.env.PORT}`);
+        })
+    })
+    .catch((error) => {
+        console.log(`MongoDB connection error !!! ${error}`);
+        throw error;
+    })
