@@ -260,39 +260,40 @@ export const getUserProfile = async (req, res) => {
 export const updateUserProfile = async (req, res) => {
     try {
         const { id } = req.user;
-
-        // Validate user ID
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ message: "Invalid ID format", success: false });
         }
 
         const { name, bio } = req.body;
 
-        // Validate name
+        // Optional validation (for name, bio, etc.)
         if (!name || typeof name !== "string" || name.trim().length === 0) {
             return res.status(400).json({ message: "Invalid name provided", success: false });
         }
 
-        // Handle file uploads
-        const profileImageLocalPath = req?.files?.profileImage?.[0]?.path;
-        const coverImageLocalPath = req?.files?.coverImage?.[0]?.path;
+        let updatedFields = { name, bio };
 
-        const profileImage = profileImageLocalPath ? await uploadToCloudinary(profileImageLocalPath) : null;
-        const coverImage = coverImageLocalPath ? await uploadToCloudinary(coverImageLocalPath) : null;
+        // Check if new profile image is provided
+        if (req?.files?.profileImage) {
+            const profileImageLocalPath = req.files.profileImage[0].path;
+            const profileImage = await uploadToCloudinary(profileImageLocalPath);
+            updatedFields.profileImage = profileImage?.url || "";
+        }
 
-        // Update user data in the database
+        // Check if new cover image is provided
+        if (req?.files?.coverImage) {
+            const coverImageLocalPath = req.files.coverImage[0].path;
+            const coverImage = await uploadToCloudinary(coverImageLocalPath);
+            updatedFields.coverImage = coverImage?.url || "";
+        }
+
         const updatedUser = await User.findByIdAndUpdate(
             id,
             {
-                $set: {
-                    name,
-                    bio,
-                    profileImage: profileImage?.url || "",
-                    coverImage: coverImage?.url || ""
-                }
+                $set: updatedFields
             },
-            { new: true, runValidators: true }
-        ).select("-password"); // Exclude the password
+            { new: true, runValidators: true } // runValidators ensures that schema validations are enforced
+        ).select("-password"); // Exclude the password from the returned user data
 
         if (!updatedUser) {
             return res.status(404).json({ message: "User not found", success: false });
@@ -303,12 +304,13 @@ export const updateUserProfile = async (req, res) => {
             user: updatedUser,
             success: true
         });
-
     } catch (error) {
         console.error("Error updating user profile:", error);
         res.status(500).json({ message: "Internal Server Error", success: false });
     }
 };
+
+
 export const DeleteUser = async (req, res) => {
     try {
         const { id } = req.user;
