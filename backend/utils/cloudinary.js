@@ -12,36 +12,58 @@ try {
 }
 
 
+const checkForDuplicateImage = async (phash) => {
+    try {
+        const result = await cloudinary.search
+            .expression(`phash=${phash}`)
+            .execute();
+        return result.total_count > 0 ? result.resources[0].secure_url : null;
+    } catch (error) {
+        console.error("Error checking for duplicate image:", error);
+        return null;
+    }
+};
+
 const uploadToCloudinary = async (localFilePath, image) => {
     try {
         if (!localFilePath) return null;
+
+        // First, upload the image to get its phash
         const response = await cloudinary.uploader.upload(localFilePath, {
-            resource_type: 'auto'
-        })
-        const url = await cloudinary.url(response?.public_id, {
+            resource_type: 'auto',
+            phash: true, // Request the perceptual hash
+        });
+
+        // Check if an image with the same phash already exists
+        const existingImageUrl = await checkForDuplicateImage(response.phash);
+        if (existingImageUrl) {
+            fs.unlinkSync(localFilePath);
+            console.log('Duplicate image found, returning existing image URL.');
+            return existingImageUrl;
+        }
+
+        // Proceed with transformations and return the final URL
+        const url = await cloudinary.url(response.public_id, {
             transformation: [
+                { fetch_format: 'auto' },
+                { quality: 'auto' },
                 {
-                    fetch_format: 'auto',
-                },
-                {
-                    quality: 'auto'
-                },
-                {
-                    width: image == "profileImage" ? 400 : 900,
-                    height: image == "profileImage" ? 400 : 300,
+                    width: image === "profileImage" ? 400 : 900,
+                    height: image === "profileImage" ? 400 : 300,
                     crop: 'fill',
-                    gravity: 'auto'
-                }
-            ]
-        })
+                    gravity: 'auto',
+                },
+            ],
+        });
+
         fs.unlinkSync(localFilePath);
-        if(!url) return null        
         return url;
     } catch (error) {
         console.error(error);
-        fs.unlinkSync(localFilePath)    // Remove the locally saved temporary file as the upload operation got failed.
+        fs.unlinkSync(localFilePath);
         return null;
     }
-}
+};
+
 
 export {uploadToCloudinary};
