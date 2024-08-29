@@ -7,12 +7,15 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { USER_API_ENDPOINT } from "../../utils/constants";
-import { followingUpdate, setOtherUserUpdate } from "../redux/features/user/userSlice";
+import { followingUpdate, refreshProfile, setOtherUserUpdate } from "../redux/features/user/userSlice";
 import ReactLoading from 'react-loading';
 import EditProfile from "./EditProfile";
+import ImagePreview from "./ImagePreview";
 
 const Profile = () => {
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [showProfileImagePreview, setShowProfileImagePreview] = useState(false);
+  const [showCoverImagePreview, setShowCoverImagePreview] = useState(false);
   const dispatch = useDispatch();
   const { loggedInUser, profile } = useSelector((state) => state.user);
   const {id} = useParams();
@@ -30,6 +33,41 @@ const Profile = () => {
     } catch (error) {
       toast.error(error?.response?.data?.message);
       console.log(error);
+    }
+  }
+  
+  const handleEditImage = async (image) => {
+    const {profileImage, coverImage} = image;
+    console.log(profileImage, coverImage);
+    try {
+      const formData = new FormData();
+      formData.append("name", profile.name);
+      formData.append("bio", profile.bio);
+
+      if (profileImage) {
+        formData.append("profileImage", profileImage); // Append profile image if it’s selected
+      }
+
+      if (coverImage) {
+        formData.append("coverImage", coverImage); // Append cover image if it’s selected
+      }
+
+      const res = await axios.put(`${USER_API_ENDPOINT}/updateUser`, formData, {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" }, // Specify multipart content type
+      });
+
+      toast.success(res?.data?.message || "Profile updated successfully!");
+
+      dispatch(refreshProfile());
+      setShowCoverImagePreview(false);
+      setShowProfileImagePreview(false);
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      toast.error(
+        error?.response?.data?.message ||
+          "Something went wrong updating the profile."
+      );
     }
   }
 
@@ -74,6 +112,7 @@ const Profile = () => {
             profile.coverImage ||
             "https://img.freepik.com/free-vector/blank-user-circles_78370-4336.jpg?t=st=1721382103~exp=1721385703~hmac=e7d40823f98d6ba1037acb35954b8d27566bf23bdc128cc3d1ca39d0c38b5ece&w=1480"
           }
+          onClick={() => setShowCoverImagePreview(true)}
           alt="cover-img"
         />
       </div>
@@ -84,6 +123,7 @@ const Profile = () => {
               profile.profileImage ||
               "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?ga=GA1.1.1883982623.1721382457&semt=sph"
             }
+            onClick={() => setShowProfileImagePreview(true)}
             alt="profile-photo"
           />
         </div>
@@ -118,7 +158,26 @@ const Profile = () => {
         <p className="mt-5">{profile.bio || "Describe yourself here!!"}</p>
       </div>
       {isEditProfileOpen && (
-        <EditProfile onClose={() => setIsEditProfileOpen(false)} profileInfo= {profile} />
+        <EditProfile
+          onClose={() => setIsEditProfileOpen(false)}
+          profileInfo={profile}
+        />
+      )}
+      {showCoverImagePreview && (
+        <ImagePreview
+          imageSrc={profile.coverImage}
+          onClose={() => setShowCoverImagePreview(false)}
+          onEdit={handleEditImage}
+          isProfileImageOpen={false}
+        />
+      )}
+      {showProfileImagePreview && (
+        <ImagePreview
+          imageSrc={profile.profileImage}
+          onClose={() => setShowProfileImagePreview(false)}
+          onEdit={handleEditImage}
+          isProfileImageOpen={true}
+        />
       )}
     </div>
   );
