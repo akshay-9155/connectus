@@ -16,6 +16,7 @@ const Profile = () => {
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [showProfileImagePreview, setShowProfileImagePreview] = useState(false);
   const [showCoverImagePreview, setShowCoverImagePreview] = useState(false);
+  const [showLoading, setShowLoading] = useState(false);
   const dispatch = useDispatch();
   const { loggedInUser, profile } = useSelector((state) => state.user);
   const {id} = useParams();
@@ -37,6 +38,7 @@ const Profile = () => {
   }
   
   const handleEditImage = async (image) => {
+    setShowLoading(true);
     const {profileImage, coverImage} = image;
     console.log(profileImage, coverImage);
     try {
@@ -56,6 +58,7 @@ const Profile = () => {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" }, // Specify multipart content type
       });
+      setShowLoading(false);
 
       toast.success(res?.data?.message || "Profile updated successfully!");
 
@@ -83,6 +86,19 @@ const Profile = () => {
       </div>
     ); // Display a loading state while the profile is being fetched
   }
+
+  // if (showLoading) {
+  //   return (
+  //     <div className="w-full flex justify-center">
+  //       <ReactLoading
+  //         type="spinningBubbles"
+  //         color="#1A8CF1"
+  //         height={"20%"}
+  //         width={"20%"}
+  //       />
+  //     </div>
+  //   ); // Display a loading state while the profile is being fetched
+  // }
 
   return (
     <div className="border-x-[1px] border-zinc-800 w-[50%] h-screen overflow-y-auto mx-8">
@@ -169,6 +185,7 @@ const Profile = () => {
           onClose={() => setShowCoverImagePreview(false)}
           onEdit={handleEditImage}
           isProfileImageOpen={false}
+          showLoading={showLoading}
         />
       )}
       {showProfileImagePreview && (
@@ -177,6 +194,7 @@ const Profile = () => {
           onClose={() => setShowProfileImagePreview(false)}
           onEdit={handleEditImage}
           isProfileImageOpen={true}
+          showLoading={showLoading}
         />
       )}
     </div>

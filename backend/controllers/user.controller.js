@@ -276,15 +276,15 @@ export const updateUserProfile = async (req, res) => {
         // Check if new profile image is provided
         if (req?.files?.profileImage) {
             const profileImageLocalPath = req.files.profileImage[0].path;
-            const profileImage = await uploadToCloudinary(profileImageLocalPath);
-            updatedFields.profileImage = profileImage?.url || "";
+            const url = await uploadToCloudinary(profileImageLocalPath, "profileImage");
+            updatedFields.profileImage = url || "";
         }
 
         // Check if new cover image is provided
         if (req?.files?.coverImage) {
             const coverImageLocalPath = req.files.coverImage[0].path;
-            const coverImage = await uploadToCloudinary(coverImageLocalPath);
-            updatedFields.coverImage = coverImage?.url || "";
+            const url = await uploadToCloudinary(coverImageLocalPath, "coverImage");
+            updatedFields.coverImage = url || "";
         }
 
         const updatedUser = await User.findByIdAndUpdate(

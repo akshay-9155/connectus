@@ -4,6 +4,7 @@ import { USER_API_ENDPOINT } from "../../utils/constants";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { refreshProfile } from "../redux/features/user/userSlice";
+import ReactLoading from "react-loading";
 
 const EditProfile = ({ onClose, profileInfo }) => {
   // State to manage the form inputs
@@ -17,6 +18,7 @@ const EditProfile = ({ onClose, profileInfo }) => {
   const [coverImagePreview, setCoverImagePreview] = useState(
     profileInfo.coverImage || ""
   ); // For image preview
+  const [showLoading, setShowLoading] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -38,6 +40,7 @@ const EditProfile = ({ onClose, profileInfo }) => {
 
   const handleSaveProfile = async () => {
     try {
+      setShowLoading(true);
       const formData = new FormData();
       formData.append("name", name);
       formData.append("bio", bio);
@@ -55,6 +58,8 @@ const EditProfile = ({ onClose, profileInfo }) => {
         headers: { "Content-Type": "multipart/form-data" }, // Specify multipart content type
       });
 
+      setShowLoading(false);
+
       toast.success(res?.data?.message || "Profile updated successfully!");
 
       dispatch(refreshProfile());
@@ -70,67 +75,82 @@ const EditProfile = ({ onClose, profileInfo }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
+      <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-lg">
         <h2 className="text-2xl font-bold mb-4 text-gray-300">Edit Profile</h2>
 
-        {/* Profile Image */}
-        <div className="mb-4">
-          <label className="block text-gray-400">Profile Image</label>
-          <input
-            type="file"
-            accept="image/*"
-            className="w-full mt-2 text-gray-300"
-            onChange={handleProfileImageChange}
-          />
-          {profileImagePreview && (
-            <img
-              src={profileImagePreview}
-              alt="Profile Preview"
-              className="mt-4 w-24 h-24 rounded-full object-cover"
-            />
-          )}
-        </div>
+        {showLoading ? (
+          <>
+            <div className="w-full flex justify-center mb-8">
+              <ReactLoading
+                type="spinningBubbles"
+                color="#1A8CF1"
+                height={"20%"}
+                width={"20%"}
+              />
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Profile Image */}
+            <div className="mb-4">
+              <label className=" text-gray-400">Profile Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                className=" mt-2 ml-4 text-gray-300"
+                onChange={handleProfileImageChange}
+              />
+              {profileImagePreview && (
+                <img
+                  src={profileImagePreview}
+                  alt="Profile Preview"
+                  className="mt-4 w-24 h-24 rounded-full object-cover"
+                />
+              )}
+            </div>
 
-        {/* Cover Image */}
-        <div className="mb-4">
-          <label className="block text-gray-400">Cover Image</label>
-          <input
-            type="file"
-            accept="image/*"
-            className="w-full mt-2 text-gray-300"
-            onChange={handleCoverImageChange}
-          />
-          {coverImagePreview && (
-            <img
-              src={coverImagePreview}
-              alt="Cover Preview"
-              className="mt-4 w-full h-32 object-cover rounded-lg"
-            />
-          )}
-        </div>
+            {/* Cover Image */}
+            <div className="mb-4">
+              <label className=" text-gray-400">Cover Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                className=" mt-2 ml-4 text-gray-300"
+                onChange={handleCoverImageChange}
+              />
+              {coverImagePreview && (
+                <img
+                  src={coverImagePreview}
+                  alt="Cover Preview"
+                  className="mt-4 w-full h-32 object-cover rounded-lg"
+                />
+              )}
+            </div>
 
-        {/* Name */}
-        <div className="mb-4">
-          <label className="block text-gray-400">Name</label>
-          <input
-            type="text"
-            className="w-full px-4 py-2 mt-2 bg-transparent border rounded-lg focus:outline-none text-gray-300"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </div>
+            {/* Name */}
+            <div className="mb-4">
+              <label className="block text-gray-400">Name</label>
+              <input
+                type="text"
+                className="w-full px-4 py-2 mt-2 bg-transparent border rounded-lg focus:outline-none text-gray-300"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
 
-        {/* Bio */}
-        <div className="mb-4">
-          <label className="block text-gray-400">Bio</label>
-          <textarea
-            className="w-full px-4 py-2 mt-2 bg-transparent border rounded-lg focus:outline-none text-gray-300"
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
-            rows="3"
-          />
-        </div>
+            {/* Bio */}
+            <div className="mb-4">
+              <label className="block text-gray-400">Bio</label>
+              <textarea
+                className="w-full px-4 py-2 mt-2 bg-transparent border rounded-lg focus:outline-none text-gray-300"
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                rows="3"
+              />
+            </div>
+          </>
+        )}
 
         {/* Action Buttons */}
         <div className="flex justify-end space-x-4">

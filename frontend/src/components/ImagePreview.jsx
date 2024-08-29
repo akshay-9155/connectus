@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { FaWindowClose } from "react-icons/fa";
+import ReactLoading from "react-loading";
 
 const ImagePreview = ({
   imageSrc,
   onClose,
   onEdit,
-  isProfileImageOpen
+  isProfileImageOpen,
+  showLoading
 }) => {
   const [image, setImage] = useState({
     profileImage: null,
@@ -32,11 +34,27 @@ const ImagePreview = ({
             <FaWindowClose size={36} />
           </button>
         </div>
-        <img
-          src={imageSrc}
-          alt="Preview"
-          className="w-full h-auto object-contain rounded"
-        />
+        {showLoading ? (
+          <>
+            <div className="w-full flex justify-center">
+              <ReactLoading
+                type="spinningBubbles"
+                color="#1A8CF1"
+                height={"20%"}
+                width={"20%"}
+              />
+            </div>
+          </>
+        ) : (
+          <>
+            <img
+              src={imageSrc}
+              alt="Preview"
+              className="w-full h-auto object-contain rounded"
+            />
+          </>
+        )}
+
         <div className="flex items-center mt-4 gap-4">
           <button
             className={`px-4 py-2 ${
