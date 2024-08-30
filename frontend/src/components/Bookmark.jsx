@@ -52,7 +52,7 @@ const Bookmark = () => {
   }
   return (
     <div className="border-x-[1px] border-zinc-800 w-[50%] h-screen overflow-y-auto mx-8">
-      <div className=" flex px-4 py-1 items-center">
+      <div className=" flex px-4 py-1 items-center border-b-[1px] border-zinc-800">
         <Link
           to="/"
           className=" cursor-pointer p-3 rounded-full hover:bg-zinc-700"
@@ -64,8 +64,7 @@ const Bookmark = () => {
         </h1>
       </div>
       <div>
-        {
-        loggedInUser?.bookmarks.map((tweet) => {
+        {loggedInUser?.bookmarks.map((tweet) => {
           return (
             <Tweet key={tweet?._id} tweet={tweet} loggedInUser={loggedInUser} />
           );
