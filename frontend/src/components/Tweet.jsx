@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Avatar from "react-avatar";
 import { MdVerified, MdDeleteOutline, MdDelete } from "react-icons/md";
 import { FaBookmark, FaHeart, FaRegComment } from "react-icons/fa";
@@ -16,8 +16,10 @@ import { setRefresh } from "../redux/features/tweets/tweetSlice";
 import { toast } from "react-hot-toast";
 import { getLoggedInUser } from "../redux/features/user/userSlice";
 import { showConfirm } from "react-confirm-prompt";
+import CommentBox from "./CommentBox";
 
 const Tweet = ({ tweet, loggedInUser }) => {
+  const [showComments, setShowComments] = useState(false);
   const dispatch = useDispatch();
   const likeOrDislikeHandler = async () => {
     try {
@@ -73,7 +75,7 @@ const Tweet = ({ tweet, loggedInUser }) => {
   };
   return (
     <div className="w-full p-4 border-b-[1px] border-zinc-800">
-      <div className="flex gap-2">
+      <div className="flex gap-2 ">
         <div className="h-fit">
           <Avatar
             src={
@@ -85,7 +87,7 @@ const Tweet = ({ tweet, loggedInUser }) => {
             className="cursor-pointer"
           />
         </div>
-        <div className=" w-full">
+        <div className=" w-full ">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="font-bold">
@@ -118,7 +120,7 @@ const Tweet = ({ tweet, loggedInUser }) => {
       </div>
       <div className="flex justify-between items-center mt-4">
         <div className="flex gap-2 items-center text-xl px-4 ">
-          <div className="cursor-pointer rounded-full hover:bg-sky-100 p-2 hover:text-sky-900">
+          <div onClick={() => setShowComments(prev => !prev)} className="cursor-pointer rounded-full hover:bg-sky-100 p-2 hover:text-sky-900">
             <FaRegComment className="" />
           </div>
           <p>{tweet?.comments?.length}</p>
@@ -160,6 +162,9 @@ const Tweet = ({ tweet, loggedInUser }) => {
           <FaRegBookmark className="" />
         </div> */}
       </div>
+      {showComments && <>
+        <CommentBox onClose = {() => setShowComments(false)} />
+      </>}
     </div>
   );
 };
