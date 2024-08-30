@@ -12,6 +12,7 @@ const CreatePost = ({ loggedInUser }) => {
   const [description, setDescription] = useState("");
   const [tweetImages, setTweetImages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [postLoading, setPostLoading] = useState(false);
   const [tweetImagesPreview, setTweetImagesPreview] = useState([]);
   const [showTweetImages, setShowTweetImages] = useState(false);
   const imageInputRef = useRef(null);
@@ -37,8 +38,8 @@ const CreatePost = ({ loggedInUser }) => {
   };
 
   const postTweet = async () => {
-    setShowTweetImages(false);
     try {
+      setPostLoading(true);
       const formData = new FormData();
       formData.append("description", description);
       tweetImages.forEach((file) => {
@@ -51,6 +52,8 @@ const CreatePost = ({ loggedInUser }) => {
           "Content-Type": "multipart/form-data",
         },
       });
+      setShowTweetImages(false);
+      setPostLoading(false);
 
       if (res.data.success) {
         toast.success(res.data.message);
@@ -168,6 +171,18 @@ const CreatePost = ({ loggedInUser }) => {
           </>
         )}
       </div>
+      {postLoading && (
+        <div className="w-screen h-screen absolute flex items-center opacity-90 top-0 left-0 bg-black text-white">
+          <div className="w-full flex justify-center mb-8">
+            <ReactLoading
+              type="spinningBubbles"
+              color="#1A8CF1"
+              height={"5%"}
+              width={"5%"}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

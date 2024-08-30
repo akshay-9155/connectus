@@ -19,6 +19,7 @@ import { showConfirm } from "react-confirm-prompt";
 import CommentBox from "./CommentBox";
 
 const Tweet = ({ tweet, loggedInUser }) => {
+  // console.log(tweet);
   const [showComments, setShowComments] = useState(false);
   const dispatch = useDispatch();
   const likeOrDislikeHandler = async () => {
@@ -76,7 +77,7 @@ const Tweet = ({ tweet, loggedInUser }) => {
   return (
     <div className="w-full p-4 border-b-[1px] border-zinc-800">
       <div className="flex gap-2 ">
-        <div className="h-fit">
+        <div className="h-fit ">
           <Avatar
             src={
               `${tweet?.author?.profileImage}` ||
@@ -116,11 +117,25 @@ const Tweet = ({ tweet, loggedInUser }) => {
           <div>
             <p>{tweet?.description}</p>
           </div>
+          <div className="tweet-images mt-4 columns-2 pr-4 gap-4">
+            {tweet?.images?.map((imageUrl, index) => (
+              <div key={index} className="mb-4 break-inside-avoid">
+                <img
+                  className="w-full h-auto rounded-lg object-cover"
+                  src={imageUrl}
+                  alt={`Uploaded ${index + 1}`}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
       <div className="flex justify-between items-center mt-4">
         <div className="flex gap-2 items-center text-xl px-4 ">
-          <div onClick={() => setShowComments(prev => !prev)} className="cursor-pointer rounded-full hover:bg-sky-100 p-2 hover:text-sky-900">
+          <div
+            onClick={() => setShowComments((prev) => !prev)}
+            className="cursor-pointer rounded-full hover:bg-sky-100 p-2 hover:text-sky-900"
+          >
             <FaRegComment className="" />
           </div>
           <p>{tweet?.comments?.length}</p>
@@ -162,9 +177,11 @@ const Tweet = ({ tweet, loggedInUser }) => {
           <FaRegBookmark className="" />
         </div> */}
       </div>
-      {showComments && <>
-        <CommentBox onClose = {() => setShowComments(false)} />
-      </>}
+      {showComments && (
+        <>
+          <CommentBox onClose={() => setShowComments(false)} />
+        </>
+      )}
     </div>
   );
 };
