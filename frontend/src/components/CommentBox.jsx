@@ -11,16 +11,22 @@ const CommentBox = ({ onClose }) => {
       author: "john_doe",
       text: "This is a great tweet!",
       createdAt: "2024-08-30T12:34:56.789Z",
+      updatedAt: "2024-08-30T12:34:56.789Z",
+      likes: [],
       replies: [
         {
           author: "jane_smith",
           text: "I agree! Very insightful.",
           createdAt: "2024-08-30T13:00:00.000Z",
+          updatedAt: "2024-08-30T12:34:56.789Z",
+          likes: [],
         },
         {
           author: "alice_wonder",
           text: "Could you provide more examples?",
           createdAt: "2024-08-30T13:15:20.000Z",
+          updatedAt: "2024-08-30T12:34:56.789Z",
+          likes: [],
         },
       ],
     },

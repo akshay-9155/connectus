@@ -7,7 +7,9 @@ const ImagePreview = ({
   onClose,
   onEdit,
   isProfileImageOpen,
-  showLoading
+  showLoading,
+  profileId,
+  loggedInUserId,
 }) => {
   const [image, setImage] = useState({
     profileImage: null,
@@ -22,10 +24,12 @@ const ImagePreview = ({
   };
 
   const [showImageInput, setShowImageInput] = useState(false);
+  console.log(profileId);
+  console.log(loggedInUserId);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-      <div className="bg-gray-800 p-4 rounded-lg shadow-lg relative max-w-lg w-full">
+      <div className="bg-gray-800 p-4 rounded-lg shadow-lg relative max-w-3xl w-fit">
         <div className="  flex justify-end">
           <button
             className="text-red-500 font-extrabold hover:text-red-800"
@@ -48,44 +52,46 @@ const ImagePreview = ({
         ) : (
           <>
             <img
-              src={imageSrc}
+              src={imageSrc || ""}
               alt="Preview"
-              className="w-full h-auto object-contain rounded"
+              className={`bg-pink-700  mt-2 ${isProfileImageOpen ? "min-h-96 min-w-96 h-[400px]" : " min-h-32 max-h-48 min-w-[500px] w-full"} object-cover rounded`}
             />
           </>
         )}
 
-        <div className="flex items-center mt-4 gap-4">
-          <button
-            className={`px-4 py-2 ${
-              showImageInput
-                ? "bg-red-500 hover:bg-red-600"
-                : "bg-blue-500 hover:bg-blue-600"
-            } text-white rounded `}
-            onClick={() => setShowImageInput((prev) => !prev)}
-          >
-            {showImageInput ? "Cancel" : "Edit"}
-          </button>
-          {showImageInput && (
-            <>
-              <form>
-                <input
-                  className=" text-gray-200"
-                  type="file"
-                  name="image"
-                  id="image"
-                  onChange={handleImageChange}
-                />
-              </form>
-              <button
-                className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-800"
-                onClick={() => onEdit(image)}
-              >
-                Submit
-              </button>
-            </>
-          )}
-        </div>
+        {profileId == loggedInUserId && (
+          <div className="flex items-center mt-4 gap-4">
+            <button
+              className={`px-4 py-2 ${
+                showImageInput
+                  ? "bg-red-500 hover:bg-red-600"
+                  : "bg-blue-500 hover:bg-blue-600"
+              } text-white rounded `}
+              onClick={() => setShowImageInput((prev) => !prev)}
+            >
+              {showImageInput ? "Cancel" : "Edit"}
+            </button>
+            {showImageInput && (
+              <>
+                <form>
+                  <input
+                    className=" text-gray-200"
+                    type="file"
+                    name="image"
+                    id="image"
+                    onChange={handleImageChange}
+                  />
+                </form>
+                <button
+                  className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-800"
+                  onClick={() => onEdit(image)}
+                >
+                  Submit
+                </button>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

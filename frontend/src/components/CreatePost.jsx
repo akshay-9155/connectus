@@ -12,6 +12,7 @@ const CreatePost = ({ loggedInUser }) => {
   const dispatch = useDispatch();
   const postTweet = async () => {
     try {
+      console.log(description);
       const res = await axios.post(
         `${TWEET_API_ENDPOINT}/create`,
         { description },
@@ -22,6 +23,7 @@ const CreatePost = ({ loggedInUser }) => {
       if (res.data.success) {
         toast.success(res?.data?.message);
       }
+      console.log(res);
       dispatch(setRefresh());
       setDescription("");
     } catch (error) {

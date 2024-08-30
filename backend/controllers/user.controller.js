@@ -146,7 +146,9 @@ export const GetOtherUsers = async (req, res) => {
 export const GetOtherUnfollowedUsers = async (req, res) => {
     try {
         const { id } = req.user;
-        const { following } = await User.findById(id);
+        const user = await User.findById(id);
+        if(!user.following) return [];
+        const following = user.following;
         // Ensure that id and userId are valid ObjectIds
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ "message": "Invalid ID format", success: false });

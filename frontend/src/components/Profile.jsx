@@ -181,6 +181,8 @@ const Profile = () => {
       )}
       {showCoverImagePreview && (
         <ImagePreview
+          profileId={id}
+          loggedInUserId = {loggedInUser?._id}
           imageSrc={profile.coverImage}
           onClose={() => setShowCoverImagePreview(false)}
           onEdit={handleEditImage}
@@ -190,6 +192,8 @@ const Profile = () => {
       )}
       {showProfileImagePreview && (
         <ImagePreview
+          profileId={id}
+          loggedInUserId = {loggedInUser?._id}
           imageSrc={profile.profileImage}
           onClose={() => setShowProfileImagePreview(false)}
           onEdit={handleEditImage}

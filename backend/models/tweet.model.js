@@ -1,5 +1,20 @@
 import mongoose from "mongoose";
 
+const replySchema = new mongoose.Schema({
+    author: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    },
+    replyText: {
+        type: String,
+        required: true
+    },
+    replyLikes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User' 
+    }]
+},{timestamps: true})
+
 const commentSchema = new mongoose.Schema({
     author: {
         type: mongoose.Schema.Types.ObjectId,
@@ -8,6 +23,13 @@ const commentSchema = new mongoose.Schema({
     content: {
         type: String,
         required: true
+    },
+    likes: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    replies: {
+        type: [replySchema]
     }
 },{timestamps: true})
 

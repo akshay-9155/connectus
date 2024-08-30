@@ -25,11 +25,11 @@ const userSchema = new mongoose.Schema({
     },
     profileImage: {
         type: String,
-        default: ""
+        default: "https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?size=626&ext=jpg&ga=GA1.1.773177594.1724988335&semt=ais_hybrid"
     },
     coverImage: {
         type: String,
-        default: ""
+        default: "https://img.freepik.com/free-vector/blank-user-circles_78370-4336.jpg?size=626&ext=jpg&ga=GA1.1.773177594.1724988335&semt=ais_hybrid"
     },
     following: {
         type: [mongoose.Schema.Types.ObjectId],
@@ -58,16 +58,16 @@ userSchema.pre("save", async function (next){
         person.password = hashedPassword;
         next();
     } catch (error) {
-        resizeBy.status(500).send("Internal Server Error")
+        next(error)
     }
 })
 
 userSchema.methods.comparePassword = async function(userPassword){
     try {
         const person = this;
-        return bcrypt.compare(userPassword, person.password);  
+        return await bcrypt.compare(userPassword, person.password);  
     } catch (error) {
-        res.status(500).send("Internal Server Error!");
+        return false;
     }
 }
 
