@@ -5,6 +5,7 @@ import Login from './Login'
 import Profile from './Profile'
 import Feed from './Feed'
 import Bookmark from './Bookmark'
+import ImageUpload from './ImageUpload'
 const browserRouter = createBrowserRouter([
   {
     path: '/',
@@ -21,6 +22,10 @@ const browserRouter = createBrowserRouter([
       {
         path: '/bookmarks',
         element: <Bookmark/>
+      },
+      {
+        path: '/upload',
+        element: <ImageUpload/>
       }
     ]
   },

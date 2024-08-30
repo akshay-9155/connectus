@@ -1,6 +1,7 @@
 import { Tweet } from "../models/tweet.model.js";
 import { User } from "../models/user.model.js";
 import mongoose from "mongoose";
+import { uploadToCloudinary } from "../utils/cloudinary.js";
 
 export const createTweet = async (req, res) => {
     try {
@@ -13,9 +14,15 @@ export const createTweet = async (req, res) => {
         if (!description) {
             return res.status(404).json({ "message": "Tweet can not be Empty", success: false });
         }
+        if (!req.files.tweetImages) return res.status(500).json({ "message": "Error uploading images", success: false });
+        const { tweetImages } = req.files;
+        const uploadPromise = tweetImages.map(tweetImage => uploadToCloudinary(tweetImage.path));
+        const results = await Promise.all(uploadPromise);
+        if (!results) return res.status(500).json({ "message": "Failed to tweet! Please retry...", success: false });
         const newTweet = new Tweet();
         newTweet.description = description;
         newTweet.author = id;
+        newTweet.images = results;
         const savedTweet = await newTweet.save();
         const user = await User.findByIdAndUpdate(
             id,

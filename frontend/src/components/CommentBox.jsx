@@ -3,7 +3,7 @@ import { FaHeart, FaRegHeart, FaRegWindowClose } from "react-icons/fa";
 import { LuDot } from "react-icons/lu";
 
 const CommentBox = ({ onClose }) => {
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState("@twitterUser");
   const [replyTarget, setReplyTarget] = useState("");
 
   const comments = [
