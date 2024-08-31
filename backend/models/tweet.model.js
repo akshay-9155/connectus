@@ -1,20 +1,5 @@
 import mongoose from "mongoose";
 
-const replySchema = new mongoose.Schema({
-    author: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-    },
-    replyText: {
-        type: String,
-        required: true
-    },
-    replyLikes: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User' 
-    }]
-},{timestamps: true})
-
 const commentSchema = new mongoose.Schema({
     author: {
         type: mongoose.Schema.Types.ObjectId,
@@ -28,10 +13,11 @@ const commentSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     }],
-    replies: {
-        type: [replySchema]
-    }
-},{timestamps: true})
+    replies: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comment" // Reference to the same schema
+    }]
+}, { timestamps: true });
 
 const tweetSchema = new mongoose.Schema({
     description: {
@@ -41,17 +27,20 @@ const tweetSchema = new mongoose.Schema({
     images: [{
         type: String,
     }],
-    likes: {
-        type: [mongoose.Schema.Types.ObjectId],
+    likes: [{
+        type: mongoose.Schema.Types.ObjectId,
         ref: "User"
-    },
-    comments: {
-        type: [commentSchema]
-    },
+    }],
+    comments: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comment"
+    }],
     author: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     }
-},{timestamps: true})
+}, { timestamps: true });
 
-export const Tweet = mongoose.model("Tweet",tweetSchema);
+// Models
+export const Comment = mongoose.model("Comment", commentSchema);
+export const Tweet = mongoose.model("Tweet", tweetSchema);

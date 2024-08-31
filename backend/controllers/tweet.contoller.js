@@ -1,4 +1,4 @@
-import { Tweet } from "../models/tweet.model.js";
+import { Comment, Tweet } from "../models/tweet.model.js";
 import { User } from "../models/user.model.js";
 import mongoose from "mongoose";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
@@ -129,4 +129,98 @@ export const getFollowingTweets =  async (req, res) => {
         console.error(error);
         res.status(500).json({ "message": "Internal Server Error", success: false });
     }
+}
+
+
+export const addCommentOrReply = async (req, res) => {
+    const { tweetId } = req.params;
+    const { commentId, content, type } = req.body;
+    const { id } = req.user;
+
+    if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(tweetId)) {
+        return res.status(400).json({ message: "Invalid ID format", success: false });
+    }
+
+    try {
+        const tweet = await Tweet.findById(tweetId);
+        if (!tweet) {
+            return res.status(404).json({ message: "Tweet not found" });
+        }
+
+        const responseData = {};
+
+        if (type === "comment") {
+            
+            const newComment = new Comment;
+            newComment.author = id;
+            newComment.content = content;
+
+            responseData.savedComment = await newComment.save();
+            tweet.comments.push(responseData.savedComment._id);
+
+        } else if (type === "reply") {
+            const comment = await Comment.findById(commentId);
+            if (!comment) {
+                return res.status(404).json({ message: "Comment not found" });
+            }
+            const newReply = new Comment;
+            newReply.author = id;
+            newReply.content = content;
+            
+            responseData.savedReply = await newReply.save();
+            comment.replies.push(responseData.savedReply._id);
+            responseData.savedComment = await comment.save();
+
+        } else {
+            return res.status(400).json({ message: "Invalid type specified" });
+        }
+
+        responseData.tweet = await tweet.save();
+        res.status(201).json({ message: "Successfully added", responseData });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+export const getCommentByTweedId =  async (req, res) => {
+    try {
+        const { tweetId } = req.body;
+        if (!mongoose.Types.ObjectId.isValid(tweetId)) {
+            return res.status(400).json({ message: "Invalid ID format", success: false });
+        }
+        const tweet = await Tweet.findById(tweetId).populate({
+            path: "comments",
+            populate: {
+                path: "author",
+                select: "username"
+            }
+        }).exec();
+        if (!tweet) return res.status(404).json({"message": "Tweet not found."});
+        return res.status(200).json({"message": "Comments found", tweet});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: error?.response?.message || "Internal Server error" });
+    }
+}
+
+export const getRepliesByCommentId =  async (req, res) => {
+    try {
+        const { commentId } = req.body;
+        if (!mongoose.Types.ObjectId.isValid(commentId)) {
+            return res.status(400).json({ message: "Invalid ID format", success: false });
+        }
+        const comment = await Comment.findById(commentId).populate({
+            path: "replies",
+            populate: {
+                path: "author",
+                select: "username"
+            }
+        }).exec();
+        if (!comment) return res.status(404).json({ "message": "Comment not found." });
+        return res.status(200).json({ "message": "Comments found", comment });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: error?.response?.message || "Internal Server error" });
+    } 
 }
