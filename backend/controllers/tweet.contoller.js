@@ -7,22 +7,35 @@ export const createTweet = async (req, res) => {
     try {
         const { description } = req.body;
         const { id } = req.user;
+
         // Ensure that id and userId are valid ObjectIds
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ "message": "Invalid ID format", success: false });
         }
+
         if (!description) {
-            return res.status(404).json({ "message": "Tweet can not be Empty", success: false });
+            return res.status(400).json({ "message": "Tweet cannot be empty", success: false });
         }
-        if (!req.files.tweetImages) return res.status(500).json({ "message": "Error uploading images", success: false });
-        const { tweetImages } = req.files;
-        const uploadPromise = tweetImages.map(tweetImage => uploadToCloudinary(tweetImage.path));
-        const results = await Promise.all(uploadPromise);
-        if (!results) return res.status(500).json({ "message": "Failed to tweet! Please retry...", success: false });
-        const newTweet = new Tweet();
-        newTweet.description = description;
-        newTweet.author = id;
-        newTweet.images = results;
+
+        let imageResults = [];
+        if (req.files && req.files.tweetImages) {
+            const { tweetImages } = req.files;
+            // If images are provided, upload them to Cloudinary
+            const uploadPromises = tweetImages.map(tweetImage => uploadToCloudinary(tweetImage.path));
+            imageResults = await Promise.all(uploadPromises);
+
+            if (!imageResults) {
+                return res.status(500).json({ "message": "Failed to upload images. Please retry...", success: false });
+            }
+        }
+
+        // Create a new tweet with or without images
+        const newTweet = new Tweet({
+            description,
+            author: id,
+            images: imageResults
+        });
+
         const savedTweet = await newTweet.save();
         const user = await User.findByIdAndUpdate(
             id,
@@ -30,7 +43,7 @@ export const createTweet = async (req, res) => {
             { new: true }
         );
 
-        res.status(200).json({ "message": "Tweet created Successfully", tweet: savedTweet, user: user, success: true });
+        res.status(200).json({ "message": "Tweet created successfully", tweet: savedTweet, user: user, success: true });
     } catch (error) {
         console.log(error);
         res.status(500).json({ "message": "Internal Server Error", success: false });
