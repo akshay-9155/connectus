@@ -74,6 +74,8 @@ const Tweet = ({ tweet, loggedInUser }) => {
       toast.error(error?.response?.data?.message);
     }
   };
+
+  const inputBoxId = "input-box"
   return (
     <div className="w-full p-4 border-b-[1px] border-zinc-800">
       <div className="flex gap-2 ">
@@ -136,7 +138,9 @@ const Tweet = ({ tweet, loggedInUser }) => {
             onClick={() => setShowComments((prev) => !prev)}
             className="cursor-pointer rounded-full hover:bg-sky-100 p-2 hover:text-sky-900"
           >
-            <FaRegComment className="" />
+            <label htmlFor={inputBoxId}>
+              <FaRegComment className="" />
+            </label>
           </div>
           <p>{tweet?.comments?.length}</p>
         </div>
@@ -179,7 +183,11 @@ const Tweet = ({ tweet, loggedInUser }) => {
       </div>
       {showComments && (
         <>
-          <CommentBox onClose={() => setShowComments(false)} />
+          <CommentBox
+            onClose={() => setShowComments(false)}
+            tweet={tweet}
+            inputBoxId={inputBoxId}
+          />
         </>
       )}
     </div>

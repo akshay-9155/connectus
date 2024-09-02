@@ -1,18 +1,19 @@
 import express from 'express';
 import { addCommentOrReply, createTweet, deleteTweet, GetAllTweet, getCommentByTweedId, getFollowingTweets, getRepliesByCommentId, likeOrDislike } from '../controllers/tweet.contoller.js';
 import { upload } from "../config/multer.middlewares.js";
+import { jwtTokenAuthentication } from '../config/jwtAuthController.js';
 
 const router = express.Router();
 
-router.post("/create", upload.fields([
+router.post("/create", jwtTokenAuthentication, upload.fields([
     { name: "tweetImages", maxCount: 10 }
 ]), createTweet);
-router.delete("/delete/:tweetId", deleteTweet);
-router.put("/likeordislike/:tweetId", likeOrDislike);
-router.get("/getAllTweets", GetAllTweet);
-router.get("/getFollowingTweets", getFollowingTweets);
-router.post("/addCommentOrReply/:tweetId", addCommentOrReply);
-router.get("/getCommentByTweedId", getCommentByTweedId);
-router.get("/getRepliesByCommentId", getRepliesByCommentId);
+router.delete("/delete/:tweetId", jwtTokenAuthentication, deleteTweet);
+router.put("/likeordislike/:tweetId", jwtTokenAuthentication, likeOrDislike);
+router.get("/getAllTweets", jwtTokenAuthentication, GetAllTweet);
+router.get("/getFollowingTweets", jwtTokenAuthentication, getFollowingTweets);
+router.post("/addComment/:tweetId", jwtTokenAuthentication, addCommentOrReply);
+router.get("/getComments/:tweetId", jwtTokenAuthentication, getCommentByTweedId);
+router.get("/getReplies/:commentId", jwtTokenAuthentication, getRepliesByCommentId);
 
 export default router;

@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import { Tweet } from './tweet.model';
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -61,6 +62,27 @@ userSchema.pre("save", async function (next){
         next(error)
     }
 })
+
+userSchema.pre('remove', async function (next) {
+    try {
+        // Delete all tweets created by this user
+        await Tweet.deleteMany({ _id: { $in: this.tweets } });
+
+        // Optionally, handle follower and following lists
+        await this.model('User').updateMany(
+            { following: this._id },
+            { $pull: { following: this._id } }
+        );
+        await this.model('User').updateMany(
+            { followers: this._id },
+            { $pull: { followers: this._id } }
+        );
+
+        next();
+    } catch (err) {
+        next(err);
+    }
+});
 
 userSchema.methods.comparePassword = async function(userPassword){
     try {

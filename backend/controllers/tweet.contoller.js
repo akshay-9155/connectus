@@ -99,21 +99,65 @@ export const GetAllTweet = async (req, res) => {
 
         const allTweets = await Tweet.find({
             $or: [
-                { "author": id },
-                { "author": { $in: loggedInUser.following } }
+                { author: id },
+                { author: { $in: loggedInUser.following } }
             ]
-        }).populate('author','-password, -bio').sort({createdAt: -1}).lean();
+        })
+            .populate('author', '-password -bio') // Populate author excluding password and bio
+            .populate({
+                path: 'comments',
+                populate: [
+                    {
+                        path: 'author',
+                        select: 'username'
+                    },
+                    {
+                        path: 'replies',
+                        populate: [
+                            {
+                                path: 'author',
+                                select: 'username'
+                            },
+                            {
+                                path: 'replies',
+                                populate: [
+                                    {
+                                        path: 'author',
+                                        select: 'username'
+                                    },
+                                    {
+                                        path: 'replies',
+                                        populate: [
+                                            {
+                                                path: 'author',
+                                                select: 'username'
+                                            },
+                                            {
+                                                path: 'replies'
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            })
+            .sort({ createdAt: -1 })
+            .lean();
 
         res.status(200).json({ message: "All tweets found Successfully", Tweets: allTweets });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ "message": "Internal Server Error", success: false });
+        res.status(500).json({ message: "Internal Server Error", success: false });
     }
 };
 
 
+
 export const getFollowingTweets =  async (req, res) => {
     try {
+        console.log(req.user);
         const {id} = req.user;
         const loggedInUser = await User.findById(id).lean();
         if (!loggedInUser) {
@@ -185,7 +229,7 @@ export const addCommentOrReply = async (req, res) => {
 
 export const getCommentByTweedId =  async (req, res) => {
     try {
-        const { tweetId } = req.body;
+        const { tweetId } = req.params;
         if (!mongoose.Types.ObjectId.isValid(tweetId)) {
             return res.status(400).json({ message: "Invalid ID format", success: false });
         }
@@ -206,7 +250,7 @@ export const getCommentByTweedId =  async (req, res) => {
 
 export const getRepliesByCommentId =  async (req, res) => {
     try {
-        const { commentId } = req.body;
+        const { commentId } = req.params;
         if (!mongoose.Types.ObjectId.isValid(commentId)) {
             return res.status(400).json({ message: "Invalid ID format", success: false });
         }

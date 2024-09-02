@@ -25,7 +25,7 @@ const Feed = () => {
     );
   }else if(allTweets.length == 0){
     return (
-      <div className="border-x-[1px] border-zinc-800 w-[50%] h-screen overflow-y-auto mx-8">
+      <div className="border-x-[1px] border-zinc-800 w-[50%] min-h-screen overflow-y-auto mx-8">
         <CreatePost loggedInUser={loggedInUser} />
         <div className="mt-4 bg-zinc-900 rounded-xl p-3">
           <h2 className="text-xl tracking-wider font-bold mb-6">

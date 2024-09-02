@@ -1,81 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import { FaHeart, FaRegHeart, FaRegWindowClose } from "react-icons/fa";
 import { LuDot } from "react-icons/lu";
+import { timeSince, TWEET_API_ENDPOINT } from "../../utils/constants";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { setRefresh } from "../redux/features/tweets/tweetSlice";
 
-const CommentBox = ({ onClose }) => {
-  const [inputValue, setInputValue] = useState("@twitterUser");
-  const [replyTarget, setReplyTarget] = useState("");
-
-  const comments = [
-    {
-      author: "john_doe",
-      text: "This is a great tweet!",
-      createdAt: "2024-08-30T12:34:56.789Z",
-      updatedAt: "2024-08-30T12:34:56.789Z",
-      likes: [],
-      replies: [
-        {
-          author: "jane_smith",
-          text: "I agree! Very insightful.",
-          createdAt: "2024-08-30T13:00:00.000Z",
-          updatedAt: "2024-08-30T12:34:56.789Z",
-          likes: [],
-        },
-        {
-          author: "alice_wonder",
-          text: "Could you provide more examples?",
-          createdAt: "2024-08-30T13:15:20.000Z",
-          updatedAt: "2024-08-30T12:34:56.789Z",
-          likes: [],
-        },
-      ],
-    },
-    {
-      author: "alice_wonder",
-      text: "Interesting perspective, but I disagree. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nulla quo mollitia non porro inventore dolorum dignissimos ad velit officia, voluptatibus, ipsam ex molestiae temporibus ullam libero? Laborum consequuntur eum harum error repudiandae voluptates ab. Rem nesciunt sequi doloribus commodi impedit, reiciendis sunt soluta aliquam veritatis quas. Commodi laudantium quo sunt.",
-      createdAt: "2024-08-30T14:22:33.444Z",
-      replies: [
-        {
-          author: "bob_brown",
-          text: "What specifically do you disagree with?",
-          createdAt: "2024-08-30T14:45:00.000Z",
-        },
-        {
-          author: "john_doe",
-          text: "Can you clarify your points of disagreement?",
-          createdAt: "2024-08-30T15:00:00.000Z",
-        },
-      ],
-    },
-    {
-      author: "bob_brown",
-      text: "Can you elaborate more on this topic?",
-      createdAt: "2024-08-30T15:10:20.555Z",
-      replies: [
-        {
-          author: "john_doe",
-          text: "Sure, I'll provide more details soon.",
-          createdAt: "2024-08-30T15:30:45.666Z",
-        },
-        {
-          author: "jane_smith",
-          text: "Looking forward to the details!",
-          createdAt: "2024-08-30T15:45:00.000Z",
-        },
-      ],
-    },
-  ];
-
-  const handleReplyClick = (author) => {
+const CommentBox = ({ onClose, tweet }) => {
+  const [inputValue, setInputValue] = useState("");
+  const [replyTarget, setReplyTarget] = useState(tweet.author.username);
+  const [type, setType] = useState("comment");
+  const [commentId, setCommentId] = useState("");
+  const dispatch = useDispatch();
+  const handleReplyClick = (author, commentId) => {
     setReplyTarget(author);
-    setInputValue(`@${author} `);
+    setType("reply");
+    setCommentId(commentId);
+    setInputValue(`@${author.username} `);
   };
 
-  const handlePostComment = () => {
-    // Add functionality to post the comment
-    console.log(replyTarget);
+  const handlePostComment = async () => {
+    const data = { content: inputValue.replace(/^@\S+\s*/, ""), type: type };
+    if(type == "reply"){
+      data.commentId = commentId;
+    }
+    // console.log(data);
+    if(data.content.trim() == "") return toast.error("Comment cannot be empty!");
+    try {
+      const response = await axios.post(`${TWEET_API_ENDPOINT}/addComment/${tweet._id}`, data, {withCredentials: true});
+      dispatch(setRefresh());
+      toast.success(response?.data?.message);
+      // console.log(response?.data);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Something went wrong!" );
+      // console.log(error);
+    }
     setInputValue("");
-    setReplyTarget("");
+    setReplyTarget(tweet.author.username);
+    setType("comment");
+    setCommentId("");
   };
 
   return (
@@ -90,10 +54,9 @@ const CommentBox = ({ onClose }) => {
         </span>
       </div>
       <div className="space-y-4">
-        {comments.map((comment, index) => (
+        {tweet?.comments.map((comment, index) => (
           <SingleComment
             comment={comment}
-            index={index}
             key={index}
             onReplyClick={handleReplyClick}
           />
@@ -108,7 +71,7 @@ const CommentBox = ({ onClose }) => {
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           className="w-full bg-transparent text-sm outline-none border-b border-gray-700 py-2 placeholder:text-gray-400"
-          placeholder="Add a comment..."
+          placeholder={`@${replyTarget}`}
         />
         <button
           onClick={handlePostComment}
@@ -117,71 +80,97 @@ const CommentBox = ({ onClose }) => {
           Post
         </button>
       </div>
-      <span className="text-gray-500 cursor-pointer mt-2 block text-sm">
+      {/* <span className="text-gray-500 cursor-pointer mt-2 block text-sm">
         Load more ...
-      </span>
+      </span> */}
     </div>
   );
 };
 
-const SingleComment = ({ comment, index, onReplyClick }) => {
+const SingleComment = memo(({ comment, onReplyClick }) => {
   const [showReplies, setShowReplies] = useState(false);
+
   return (
-    <div key={index} className="py-2 border-b border-gray-700">
+    <div className="py-2 border-b border-gray-700">
       <div className="flex justify-between items-start">
         <p className="text-sm text-gray-200">
-          @{comment.author} <LuDot className="inline text-gray-500" />
-          <span className="ml-1">{comment.text}</span>
+          @{comment.author.username} <LuDot className="inline text-gray-500" />
+          <span className="ml-1">{comment.content}</span>
         </p>
-        <div className="ml-2 text-red-400">
+        <div className="ml-2 text-red-400 cursor-pointer">
           <FaRegHeart />
         </div>
       </div>
       <div className="text-xs text-gray-400 mt-1">
-        <span>1d</span> · <span>2000 likes</span> ·{" "}
-        <label onClick={() => onReplyClick(comment.author)} htmlFor="input-area">
+        <span>{timeSince(comment.createdAt)}</span> ·{" "}
+        <span>{comment.likes.length} likes</span> ·{" "}
+        <label
+          className="cursor-pointer"
+          onClick={() => onReplyClick(comment.author, comment._id)}
+          htmlFor="input-area"
+        >
           Reply
         </label>
       </div>
-      <div>
-        <span
-          onClick={() => setShowReplies(!showReplies)}
-          className="text-blue-500 cursor-pointer text-sm mt-1 block"
-        >
-          {showReplies ? "— Hide replies" : "— View replies"}
-        </span>
-      </div>
-      {showReplies && (
-        <div className="ml-5 mt-2 space-y-2">
-          {comment.replies.map((reply, index) => (
-            <div key={index} className="py-2 border-b border-gray-700">
-              <div className="flex justify-between items-start">
-                <p className="text-sm text-gray-300">
-                  @{reply.author} <LuDot className="inline text-gray-500" />
-                  <span className="ml-1">{reply.text}</span>
-                </p>
-                <div className="ml-2 text-blue-500 cursor-pointer">
-                  <FaRegHeart />
-                </div>
-              </div>
-              <div className="text-xs text-gray-400 mt-1">
-                <span>1d</span> · <span>2000 likes</span> ·{" "}
-                <label
-                  onClick={() => onReplyClick(reply.author)}
-                  htmlFor="input-area"
-                >
-                  Reply
-                </label>
-              </div>
-            </div>
-          ))}
-          <span className="text-gray-500 cursor-pointer mt-2 block text-sm">
-            Load more ...
+      {comment.replies && comment.replies.length > 0 && (
+        <div>
+          <span
+            onClick={() => setShowReplies(!showReplies)}
+            className="text-blue-500 cursor-pointer text-sm mt-1 block"
+          >
+            {showReplies
+              ? "— Hide replies"
+              : `— View ${comment.replies.length} replies`}
           </span>
+          {showReplies && (
+            <div className="ml-5 mt-2 space-y-2">
+              {comment.replies.map((reply, index) => (
+                <SingleReply
+                  key={index}
+                  reply={reply}
+                  onReplyClick={onReplyClick}
+                />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
   );
-};
+});
+
+const SingleReply = memo(({ reply, onReplyClick }) => (
+  <div className="py-2 border-b border-gray-700">
+    <div className="flex justify-between items-start">
+      <p className="text-sm text-gray-300">
+        @{reply?.author?.username || "twitteruser"}{" "}
+        <LuDot className="inline text-gray-500" />
+        <span className="ml-1">{reply?.content}</span>
+      </p>
+      <div className="ml-2 text-blue-500 cursor-pointer">
+        <FaRegHeart />
+      </div>
+    </div>
+    <div className="text-xs text-gray-400 mt-1">
+      <span>{timeSince(reply?.createdAt)}</span> ·{" "}
+      <span>{reply?.likes?.length || 0} likes</span> ·{" "}
+      <label className="cursor-pointer" onClick={() => onReplyClick(reply?.author, reply?._id)} htmlFor="input-area">
+        Reply
+      </label>
+    </div>
+    {/* Render nested replies recursively */}
+    {reply?.replies?.length > 0 && (
+      <div className="ml-5 mt-2 space-y-2">
+        {reply.replies.map((nestedReply, index) => (
+          <SingleReply
+            key={index}
+            reply={nestedReply}
+            onReplyClick={onReplyClick}
+          />
+        ))}
+      </div>
+    )}
+  </div>
+));
 
 export default CommentBox;
