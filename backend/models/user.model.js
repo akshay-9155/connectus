@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
-import { Tweet } from './tweet.model';
+import { Tweet } from './tweet.model.js';
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
