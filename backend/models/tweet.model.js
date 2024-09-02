@@ -19,15 +19,14 @@ const commentSchema = new mongoose.Schema({
     }]
 }, { timestamps: true });
 
-commentSchema.pre('remove', async function (next) {
+commentSchema.methods.removeReplies = async function () {
     try {
         // Delete all replies associated with this comment
         await this.model('Comment').deleteMany({ _id: { $in: this.replies } });
-        next();
     } catch (err) {
-        next(err);
+        console.log(err);
     }
-});
+};
 
 const tweetSchema = new mongoose.Schema({
     description: {
@@ -51,15 +50,15 @@ const tweetSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-tweetSchema.pre('remove', async function (next) {
+tweetSchema.methods.removeComments = async function () {
     try {
         // Delete all comments associated with this tweet
         await this.model('Comment').deleteMany({ _id: { $in: this.comments } });
-        next();
+        
     } catch (err) {
-        next(err);
+        console.log(err);
     }
-});
+};
 
 // Models
 export const Comment = mongoose.model("Comment", commentSchema);

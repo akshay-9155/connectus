@@ -322,23 +322,23 @@ export const DeleteUser = async (req, res) => {
             return res.status(400).json({ message: "Invalid ID format", success: false });
         }
 
-        // Find and delete the user
-        const deletedUser = await User.findByIdAndDelete(id);
+        // Find the user by ID
+        const user = await User.findById(id);
 
         // If user not found
-        if (!deletedUser) {
+        if (!user) {
             return res.status(404).json({ message: "User not found!", success: false });
         }
 
-        // Delete associated tweets
-        const deletedTweets = await Tweet.deleteMany({ _id: { $in: deletedUser.tweets } });
+        // Remove the user, which will trigger the pre('remove') middleware
+        await user.removeMiddleware();
+        await user.deleteOne({_id : id});
 
         // Respond with success message
         return res.status(200).json({
             message: "Account gone, memories remain",
             success: true,
-            deletedUser,
-            deletedTweets,
+            deletedUser: user,
         });
     } catch (error) {
         console.error(error);

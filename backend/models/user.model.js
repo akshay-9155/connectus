@@ -48,12 +48,12 @@ const userSchema = new mongoose.Schema({
         type: [mongoose.Schema.Types.ObjectId],
         ref: "Tweet"
     }
-},{timestamps: true})
+}, { timestamps: true })
 
-userSchema.pre("save", async function (next){
+userSchema.pre("save", async function (next) {
     try {
         const person = this;
-        if(!person.isModified("password")) return next();
+        if (!person.isModified("password")) return next();
         const salt = await bcrypt.genSaltSync(10);
         const hashedPassword = await bcrypt.hash(person.password, salt);
         person.password = hashedPassword;
@@ -63,7 +63,7 @@ userSchema.pre("save", async function (next){
     }
 })
 
-userSchema.pre('remove', async function (next) {
+userSchema.methods.removeMiddleware = async function () {
     try {
         // Delete all tweets created by this user
         await Tweet.deleteMany({ _id: { $in: this.tweets } });
@@ -78,16 +78,15 @@ userSchema.pre('remove', async function (next) {
             { $pull: { followers: this._id } }
         );
 
-        next();
     } catch (err) {
-        next(err);
+        console.log(err);
     }
-});
+};
 
-userSchema.methods.comparePassword = async function(userPassword){
+userSchema.methods.comparePassword = async function (userPassword) {
     try {
         const person = this;
-        return await bcrypt.compare(userPassword, person.password);  
+        return await bcrypt.compare(userPassword, person.password);
     } catch (error) {
         return false;
     }

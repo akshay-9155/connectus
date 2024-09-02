@@ -45,10 +45,12 @@ export const deleteTweet = async (req, res) => {
         if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(tweetId)) {
             return res.status(400).json({ "message": "Invalid ID format", success: false });
         }
-        const deletedTweet = await Tweet.findByIdAndDelete(tweetId);
-        if (!deletedTweet) {
+        const tweet = await Tweet.findById(tweetId);
+        if (!tweet) {
             return res.status(404).json({ "message": "Tweet not found!", success: false });
         }
+        tweet.removeComments();
+        const deletedTweet = await tweet.deleteOne({_id : tweetId});
         await User.findByIdAndUpdate(id, { $pull: { tweets: tweetId, bookmarks: tweetId } });        // Remove deleted tweet from User's data
         return res.status(200).json({ "message": "Tweet deleted successfully!", "deletedTweet": deletedTweet, success: true })
     } catch (error) {
