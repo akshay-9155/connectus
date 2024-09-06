@@ -187,6 +187,7 @@ const Tweet = ({ tweet, loggedInUser }) => {
             onClose={() => setShowComments(false)}
             tweet={tweet}
             inputBoxId={inputBoxId}
+            loggedInUserId={loggedInUser._id}
           />
         </>
       )}

@@ -21,10 +21,21 @@ const commentSchema = new mongoose.Schema({
 
 commentSchema.methods.removeReplies = async function () {
     try {
-        // Delete all replies associated with this comment
-        await this.model('Comment').deleteMany({ _id: { $in: this.replies } });
+        // Recursively remove all replies (and their replies) associated with this comment
+        for (let replyId of this.replies) {
+            let reply = await this.model('Comment').findById(replyId);
+            if (reply) {
+                await reply.removeReplies(); // Recursive call to remove nested replies
+                await reply.deleteOne(); // Remove the reply itself
+            }
+        }
+
+        // Clear the replies array of the current comment
+        
+
     } catch (err) {
-        console.log(err);
+        console.error('Error removing nested replies:', err);
+        throw err; // Re-throw error to handle it in the calling function if needed
     }
 };
 

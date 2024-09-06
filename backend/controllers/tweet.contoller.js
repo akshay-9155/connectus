@@ -283,3 +283,17 @@ export const getRepliesByCommentId =  async (req, res) => {
         res.status(500).json({ message: error?.response?.message || "Internal Server error" });
     } 
 }
+
+export const deleteComment =  async (req, res) => {
+    const { commentId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(commentId)) {
+        return res.status(400).json({ message: "Invalid ID format", success: false });
+    }
+    const comment = await Comment.findById(commentId);
+    if (!comment) return res.status(404).json({ "message": "Comment not found." });
+    comment.removeReplies();
+    await Comment.updateMany({replies:commentId},{$pull: {replies: commentId}});
+    const deletedComment = await comment.deleteOne({_id:commentId});
+    if (!deleteComment) return res.status(500).json({ "message": "Can't delete Comment. Something went wrong!" });
+    return res.status(200).json({"message": "Comment deleted successfully!", deletedComment});
+}

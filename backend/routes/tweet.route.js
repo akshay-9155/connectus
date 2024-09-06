@@ -1,5 +1,5 @@
 import express from 'express';
-import { addCommentOrReply, createTweet, deleteTweet, GetAllTweet, getCommentByTweedId, getFollowingTweets, getRepliesByCommentId, likeOrDislike } from '../controllers/tweet.contoller.js';
+import { addCommentOrReply, createTweet, deleteComment, deleteTweet, GetAllTweet, getCommentByTweedId, getFollowingTweets, getRepliesByCommentId, likeOrDislike } from '../controllers/tweet.contoller.js';
 import { upload } from "../config/multer.middlewares.js";
 import { jwtTokenAuthentication } from '../config/jwtAuthController.js';
 
@@ -15,5 +15,6 @@ router.get("/getFollowingTweets", jwtTokenAuthentication, getFollowingTweets);
 router.post("/addComment/:tweetId", jwtTokenAuthentication, addCommentOrReply);
 router.get("/getComments/:tweetId", jwtTokenAuthentication, getCommentByTweedId);
 router.get("/getReplies/:commentId", jwtTokenAuthentication, getRepliesByCommentId);
+router.delete("/deleteComment/:commentId", jwtTokenAuthentication, deleteComment);
 
 export default router;
