@@ -285,15 +285,41 @@ export const getRepliesByCommentId =  async (req, res) => {
 }
 
 export const deleteComment =  async (req, res) => {
-    const { commentId } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(commentId)) {
-        return res.status(400).json({ message: "Invalid ID format", success: false });
+    try {
+        const { commentId } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(commentId)) {
+            return res.status(400).json({ message: "Invalid ID format", success: false });
+        }
+        const comment = await Comment.findById(commentId);
+        if (!comment) return res.status(404).json({ "message": "Comment not found." });
+        comment.removeReplies();
+        await Comment.updateMany({replies:commentId},{$pull: {replies: commentId}});
+        const deletedComment = await comment.deleteOne({_id:commentId});
+        if (!deleteComment) return res.status(500).json({ "message": "Can't delete Comment. Something went wrong!" });
+        return res.status(200).json({"message": "Comment deleted successfully!", deletedComment});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: error?.response?.message || "Internal Server error" });
     }
-    const comment = await Comment.findById(commentId);
-    if (!comment) return res.status(404).json({ "message": "Comment not found." });
-    comment.removeReplies();
-    await Comment.updateMany({replies:commentId},{$pull: {replies: commentId}});
-    const deletedComment = await comment.deleteOne({_id:commentId});
-    if (!deleteComment) return res.status(500).json({ "message": "Can't delete Comment. Something went wrong!" });
-    return res.status(200).json({"message": "Comment deleted successfully!", deletedComment});
+}
+
+export const likeOrDislikeComment =  async (req, res) => {
+    try {
+        const {commentId} = req.params;
+        const { id } = req.user;
+        if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(commentId)) {
+            return res.status(400).json({ message: "Invalid ID format", success: false });
+        }
+        const comment = await Comment.findById(commentId);
+        if(!comment) return res.status(404).json({"message": "Comment not found!"});
+        const updateOperation = comment.likes.includes(id)
+            ? { $pull: { likes: id } }
+            : { $push: { likes: id } };
+        const updatedComment = await Comment.findByIdAndUpdate(commentId,updateOperation,{new: true});
+        const message = comment.likes.includes(id) ? "Disliked!" : "Liked!";
+        return res.status(200).json({message,updatedComment,success:true});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: error?.response?.message || "Internal Server error" });
+    }
 }
