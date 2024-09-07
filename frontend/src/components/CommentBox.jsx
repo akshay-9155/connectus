@@ -59,6 +59,23 @@ const CommentBox = ({ onClose, tweet, loggedInUserId }) => {
     }
   };
 
+
+  const likeDislikeComment = async (commentId) => {
+    try {
+      const response = await axios.get(
+        `${TWEET_API_ENDPOINT}/likeOrDislikeComment/${commentId}`, {withCredentials: true}
+      );
+      dispatch(setRefresh());
+      toast.success(response?.data?.message);
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.response?.data?.message || "Something went wrong!");
+    }
+  };
+
+ 
+  
+
   return (
     <div className="mt-2 bg-zinc-900 text-white p-4 rounded-lg shadow-lg">
       <div className="flex justify-between items-center ">
@@ -78,6 +95,7 @@ const CommentBox = ({ onClose, tweet, loggedInUserId }) => {
             onReplyClick={handleReplyClick}
             loggedInUserId={loggedInUserId}
             deleteComment={deleteComment}
+            likeDislikeComment={likeDislikeComment}
           />
         ))}
       </div>
@@ -105,8 +123,9 @@ const CommentBox = ({ onClose, tweet, loggedInUserId }) => {
   );
 };
 
-const SingleComment = memo(({ comment, onReplyClick, loggedInUserId, deleteComment }) => {
+const SingleComment = memo(({ comment, onReplyClick, loggedInUserId, deleteComment, likeDislikeComment }) => {
   const [showReplies, setShowReplies] = useState(false);
+  
 
   return (
     <div className="py-2 border-b border-gray-700">
@@ -116,8 +135,9 @@ const SingleComment = memo(({ comment, onReplyClick, loggedInUserId, deleteComme
           <span className="ml-1">{comment.content}</span>
         </p>
         <div className=" flex">
-          <div className="ml-2 text-red-400 cursor-pointer">
-            <FaRegHeart />
+          <div onClick={()=>likeDislikeComment(comment?._id)} className="ml-2 text-red-400 cursor-pointer">
+            {comment?.likes?.includes(loggedInUserId) ? <FaHeart/> : <FaRegHeart />}
+            
           </div>
           {comment.author._id == loggedInUserId && (
             <div
@@ -158,6 +178,7 @@ const SingleComment = memo(({ comment, onReplyClick, loggedInUserId, deleteComme
                   onReplyClick={onReplyClick}
                   loggedInUserId={loggedInUserId}
                   deleteComment={deleteComment}
+                  likeDislikeComment={likeDislikeComment}
                 />
               ))}
             </div>
@@ -169,7 +190,13 @@ const SingleComment = memo(({ comment, onReplyClick, loggedInUserId, deleteComme
 });
 
 const SingleReply = memo(
-  ({ reply, onReplyClick, loggedInUserId, deleteComment }) => (
+  ({
+    reply,
+    onReplyClick,
+    loggedInUserId,
+    deleteComment,
+    likeDislikeComment,
+  }) => (
     <div className="py-2 border-b border-gray-700">
       <div className="flex justify-between items-start">
         <p className="text-sm text-gray-300">
@@ -178,8 +205,15 @@ const SingleReply = memo(
           <span className="ml-1">{reply?.content}</span>
         </p>
         <div className=" flex">
-          <div className="ml-2 text-red-400 cursor-pointer">
-            <FaRegHeart />
+          <div
+            onClick={() => likeDislikeComment(reply?._id)}
+            className="ml-2 text-red-400 cursor-pointer"
+          >
+            {reply?.likes?.includes(loggedInUserId) ? (
+              <FaHeart />
+            ) : (
+              <FaRegHeart />
+            )}
           </div>
           {reply.author._id == loggedInUserId && (
             <div
@@ -211,6 +245,7 @@ const SingleReply = memo(
               onReplyClick={onReplyClick}
               loggedInUserId={loggedInUserId}
               deleteComment={deleteComment}
+              likeDislikeComment={likeDislikeComment}
             />
           ))}
         </div>

@@ -16,6 +16,6 @@ router.post("/addComment/:tweetId", jwtTokenAuthentication, addCommentOrReply);
 router.get("/getComments/:tweetId", jwtTokenAuthentication, getCommentByTweedId);
 router.get("/getReplies/:commentId", jwtTokenAuthentication, getRepliesByCommentId);
 router.delete("/deleteComment/:commentId", jwtTokenAuthentication, deleteComment);
-router.post("/likeOrDislikeComment/:commentId", jwtTokenAuthentication, likeOrDislikeComment);
+router.get("/likeOrDislikeComment/:commentId", jwtTokenAuthentication, likeOrDislikeComment);
 
 export default router;
