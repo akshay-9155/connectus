@@ -44,13 +44,21 @@ Welcome to the **CONNECT US**, a full-stack social networking platform built wit
 
 ## 📸 Screenshots
 
+### Register Page
+
+![Register-page Screenshot](./public/RegisterPage.png)
+
+### Login Page
+
+![Register-page Screenshot](./public/LoginPage.png)
+
 ### Home Page
 
-![Home Page Screenshot](path-to-image)
+![Home Page Screenshot](./public/Homepage.png)
 
-### User Profile
+### Profile Page
 
-![Profile Screenshot](path-to-image)
+![Register-page Screenshot](./public/ProfilePage.png)
 
 ---
 
