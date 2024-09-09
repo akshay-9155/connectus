@@ -1,6 +1,6 @@
-# 📱 Social Media App - MERN Stack
+# 📱 CONNECT US - Social Media App - MERN Stack
 
-Welcome to the **Social Media App**, a full-stack social networking platform built with the **MERN (MongoDB, Express, React, Node.js)** stack. This app allows users to connect, share, and interact with posts, comments, and likes, offering a seamless social media experience.
+Welcome to the **CONNECT US**, a full-stack social networking platform built with the **MERN (MongoDB, Express, React, Node.js)** stack. This app allows users to connect, share, and interact with posts, comments, and likes, offering a seamless social media experience.
 
 ---
 

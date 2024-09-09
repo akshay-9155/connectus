@@ -1,5 +1,5 @@
 {
-  "name": "twitter",
+  "name": "connectup",
   "version": "1.0.0",
   "description": "A full stack twitter website using MERN",
   "main": "index.js",
