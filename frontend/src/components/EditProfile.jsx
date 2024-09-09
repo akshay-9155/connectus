@@ -74,8 +74,8 @@ const EditProfile = ({ onClose, profileInfo }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-lg">
+    <div className="fixed inset-0 bg-[#1f120a] bg-opacity-50 flex items-center justify-center">
+      <div className="bg-[#341e11] p-6 rounded-lg shadow-lg w-full max-w-lg">
         <h2 className="text-2xl font-bold mb-4 text-gray-300">Edit Profile</h2>
 
         {showLoading ? (
@@ -83,7 +83,7 @@ const EditProfile = ({ onClose, profileInfo }) => {
             <div className="w-full flex justify-center mb-8">
               <ReactLoading
                 type="spinningBubbles"
-                color="#1A8CF1"
+                color="#E9804D"
                 height={"20%"}
                 width={"20%"}
               />
@@ -93,11 +93,11 @@ const EditProfile = ({ onClose, profileInfo }) => {
           <>
             {/* Profile Image */}
             <div className="mb-4">
-              <label className=" text-gray-400">Profile Image</label>
+              <label className=" text-[#f0c29e]">Profile Image</label>
               <input
                 type="file"
                 accept="image/*"
-                className=" mt-2 ml-4 text-gray-300"
+                className=" mt-2 ml-4 "
                 onChange={handleProfileImageChange}
               />
               {profileImagePreview && (
@@ -111,11 +111,11 @@ const EditProfile = ({ onClose, profileInfo }) => {
 
             {/* Cover Image */}
             <div className="mb-4">
-              <label className=" text-gray-400">Cover Image</label>
+              <label className=" text-[#f0c29e]">Cover Image</label>
               <input
                 type="file"
                 accept="image/*"
-                className=" mt-2 ml-4 text-gray-300"
+                className=" mt-2 ml-4 "
                 onChange={handleCoverImageChange}
               />
               {coverImagePreview && (
@@ -129,10 +129,10 @@ const EditProfile = ({ onClose, profileInfo }) => {
 
             {/* Name */}
             <div className="mb-4">
-              <label className="block text-gray-400">Name</label>
+              <label className="block text-[#f0c29e]">Name</label>
               <input
                 type="text"
-                className="w-full px-4 py-2 mt-2 bg-transparent border rounded-lg focus:outline-none text-gray-300"
+                className="w-full px-4 py-2 mt-2 bg-transparent border rounded-lg focus:outline-none "
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
@@ -141,9 +141,9 @@ const EditProfile = ({ onClose, profileInfo }) => {
 
             {/* Bio */}
             <div className="mb-4">
-              <label className="block text-gray-400">Bio</label>
+              <label className="block text-[#f0c29e]">Bio</label>
               <textarea
-                className="w-full px-4 py-2 mt-2 bg-transparent border rounded-lg focus:outline-none text-gray-300"
+                className="w-full px-4 py-2 mt-2 bg-transparent border rounded-lg focus:outline-none "
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 rows="3"
@@ -161,7 +161,7 @@ const EditProfile = ({ onClose, profileInfo }) => {
             Cancel
           </button>
           <button
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700"
             onClick={handleSaveProfile}
           >
             Update

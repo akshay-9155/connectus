@@ -77,9 +77,9 @@ const CommentBox = ({ onClose, tweet, loggedInUserId }) => {
   
 
   return (
-    <div className="mt-2 bg-zinc-900 text-white p-4 rounded-lg shadow-lg">
+    <div className="mt-2 bg-[#1f120a] p-4 rounded-lg shadow-lg">
       <div className="flex justify-between items-center ">
-        <span className="text-lg font-semibold">Comments</span>
+        <span className="text-lg font-semibold text-[#f0c29e]">Comments</span>
         <span
           onClick={onClose}
           className="text-red-400 text-2xl cursor-pointer"
@@ -106,12 +106,12 @@ const CommentBox = ({ onClose, tweet, loggedInUserId }) => {
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          className="w-full bg-transparent text-sm outline-none border-b border-gray-700 py-2 placeholder:text-gray-400"
+          className="w-full bg-transparent text-sm outline-none border-b border-[#482f1e] py-2 placeholder:text-[#f0c29e]"
           placeholder={`@${replyTarget}`}
         />
         <button
           onClick={handlePostComment}
-          className="rounded-full h-8 text-sm ml-2 px-3 bg-blue-600 text-white hover:bg-blue-700"
+          className="rounded-full h-8 text-sm ml-2 px-3 bg-[#E9804D] hover:bg-[#F9804D]"
         >
           Post
         </button>
@@ -128,20 +128,27 @@ const SingleComment = memo(({ comment, onReplyClick, loggedInUserId, deleteComme
   
 
   return (
-    <div className="py-2 border-b border-gray-700">
+    <div className="py-2 border-b border-[#482f1e]">
       <div className="flex justify-between items-start">
-        <p className="text-sm text-gray-200">
-          @{comment.author.username} <LuDot className="inline text-gray-500" />
+        <p className="text-sm ">
+          <span className="font-extrabold">@</span>
+          {comment?.author?.username} <LuDot className="inline " />
           <span className="ml-1">{comment.content}</span>
         </p>
         <div className=" flex">
-          <div onClick={()=>likeDislikeComment(comment?._id)} className="ml-2 text-red-400 cursor-pointer">
-            {comment?.likes?.includes(loggedInUserId) ? <FaHeart/> : <FaRegHeart />}
-            
+          <div
+            onClick={() => likeDislikeComment(comment?._id)}
+            className="ml-2 text-red-400 cursor-pointer"
+          >
+            {comment?.likes?.includes(loggedInUserId) ? (
+              <FaHeart />
+            ) : (
+              <FaRegHeart />
+            )}
           </div>
-          {comment.author._id == loggedInUserId && (
+          {comment?.author?._id == loggedInUserId && (
             <div
-              onClick={() => deleteComment(comment._id)}
+              onClick={() => deleteComment(comment?._id)}
               className="ml-2 text-red-400 cursor-pointer"
             >
               <MdDelete />
@@ -149,9 +156,9 @@ const SingleComment = memo(({ comment, onReplyClick, loggedInUserId, deleteComme
           )}
         </div>
       </div>
-      <div className="text-xs text-gray-400 mt-1">
+      <div className="text-xs mt-1">
         <span>{timeSince(comment.createdAt)}</span> ·{" "}
-        <span>{comment.likes.length} likes</span> ·{" "}
+        <span>{comment?.likes?.length} likes</span> ·{" "}
         <label
           className="cursor-pointer"
           onClick={() => onReplyClick(comment.author, comment._id)}
@@ -163,7 +170,7 @@ const SingleComment = memo(({ comment, onReplyClick, loggedInUserId, deleteComme
         <div>
           <span
             onClick={() => setShowReplies(!showReplies)}
-            className="text-blue-500 cursor-pointer text-sm mt-1 block"
+            className="text-[#E9804D] cursor-pointer text-sm mt-1 block"
           >
             {showReplies
               ? "— Hide replies"
@@ -197,11 +204,11 @@ const SingleReply = memo(
     deleteComment,
     likeDislikeComment,
   }) => (
-    <div className="py-2 border-b border-gray-700">
+    <div className="py-2 border-b border-[#482f1e]">
       <div className="flex justify-between items-start">
-        <p className="text-sm text-gray-300">
+        <p className="text-sm ">
           @{reply?.author?.username || "twitteruser"}{" "}
-          <LuDot className="inline text-gray-500" />
+          <LuDot className="inline" />
           <span className="ml-1">{reply?.content}</span>
         </p>
         <div className=" flex">
@@ -225,7 +232,7 @@ const SingleReply = memo(
           )}
         </div>
       </div>
-      <div className="text-xs text-gray-400 mt-1">
+      <div className="text-xs mt-1">
         <span>{timeSince(reply?.createdAt)}</span> ·{" "}
         <span>{reply?.likes?.length || 0} likes</span> ·{" "}
         <label

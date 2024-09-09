@@ -45,6 +45,10 @@ const CreatePost = ({ loggedInUser }) => {
       tweetImages.forEach((file) => {
         formData.append("tweetImages", file);
       });
+      if(!description.trim()){
+        toast.error("Post can't be empty!");
+        return setPostLoading(false);
+      }
       // console.log(formData);
       const res = await axios.post(`${TWEET_API_ENDPOINT}/create`, formData, {
         withCredentials: true,
@@ -77,15 +81,15 @@ const CreatePost = ({ loggedInUser }) => {
   };
 
   return (
-    <div className="w-full border-b-[1px] border-zinc-800">
-      <div className="flex items-center border-b-[1px] cursor-pointer border-zinc-800 text-md">
+    <div className="w-full border-b-[1px] border-[#482f1e]">
+      <div className="flex items-center border-b-[1px] cursor-pointer border-[#482f1e] text-md">
         <div
           onClick={forYouHandler}
-          className="w-1/2 flex justify-center hover:bg-zinc-800"
+          className="w-1/2 flex justify-center hover:bg-[#1f120a]"
         >
           <span
             className={`${
-              isActive ? "border-b-4 border-[#1A8CF1]" : ""
+              isActive ? "border-b-4 border-[#E9804D]" : ""
             } text-lg py-4`}
           >
             For you
@@ -93,11 +97,11 @@ const CreatePost = ({ loggedInUser }) => {
         </div>
         <div
           onClick={followingHandler}
-          className="w-1/2 flex justify-center hover:bg-zinc-800"
+          className="w-1/2 flex justify-center hover:bg-[#1f120a]"
         >
           <span
             className={`${
-              !isActive ? "border-b-4 border-[#1A8CF1]" : ""
+              !isActive ? "border-b-4 border-[#E9804D]" : ""
             } text-lg py-4`}
           >
             Following
@@ -120,7 +124,7 @@ const CreatePost = ({ loggedInUser }) => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="What is happening?!"
-            className="w-[100%] bg-transparent text-xl outline-none border-b-[1px] border-zinc-800 py-3 placeholder:pl-1 placeholder:text-zinc-500"
+            className="w-[100%] bg-transparent text-xl outline-none border-b-[1px] border-[#E9804D] py-3 placeholder:pl-1 placeholder:text-[#f0c29e]"
           />
         </div>
         <div className="flex justify-between items-center mt-4">
@@ -139,7 +143,7 @@ const CreatePost = ({ loggedInUser }) => {
           />
           <button
             onClick={postTweet}
-            className="rounded-full text-lg px-6 py-2 bg-[#1A8CD8]"
+            className="rounded-full text-lg font-bold px-6 py-2 bg-[#E9804D] hover:bg-[#F9804D]"
           >
             Post
           </button>
@@ -150,7 +154,7 @@ const CreatePost = ({ loggedInUser }) => {
               <div className="w-full flex justify-center mb-8">
                 <ReactLoading
                   type="spinningBubbles"
-                  color="#1A8CF1"
+                  color="#E9804D"
                   height={"20%"}
                   width={"20%"}
                 />
@@ -176,7 +180,7 @@ const CreatePost = ({ loggedInUser }) => {
           <div className="w-full flex justify-center mb-8">
             <ReactLoading
               type="spinningBubbles"
-              color="#1A8CF1"
+              color="#E9804D"
               height={"5%"}
               width={"5%"}
             />

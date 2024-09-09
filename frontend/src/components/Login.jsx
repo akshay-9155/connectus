@@ -7,7 +7,6 @@ import { useDispatch } from "react-redux";
 import { getLoggedInUser } from "../redux/features/user/userSlice.jsx";
 
 const Login = () => {
-
   const dispatch = useDispatch();
 
   // State to check whether user has an accout or not in order to toggle between login and signup
@@ -53,7 +52,7 @@ const Login = () => {
         );
         toast.success(response.data.message);
         // set LoggedInUser in store
-        dispatch(getLoggedInUser(response?.data?.user))
+        dispatch(getLoggedInUser(response?.data?.user));
         if (response.data.success) navigate("/");
       } catch (error) {
         toast.error(error?.response?.data?.message || "Internal Server Error");
@@ -91,18 +90,14 @@ const Login = () => {
     <div className="flex h-screen w-screen justify-center items-center">
       <div className="flex items-center justify-around gap-10 w-[80%]">
         {/* Twitter Image */}
-        <div className="">
-          <img
-            className="h-72"
-            src="https://imgs.search.brave.com/JSCTdx5RmCcveSa-5gF69eVlcSf-4pr9WuYI_fLZqlE/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9mcmVl/bG9nb3BuZy5jb20v/aW1hZ2VzL2FsbF9p/bWcvMTY5MDY0Mzc3/N3R3aXR0ZXIteCUy/MGxvZ28tcG5nLXdo/aXRlLnBuZw"
-            alt="x-logo"
-          />
+        <div className=" rounded-full overflow-hidden">
+          <img className="h-72" src="/AppLogo.jpg" alt="app-logo" />
         </div>
         <div className=" flex flex-col ">
           {/* Happening now text  */}
           <div className="mb-14">
             <h1 className="text-7xl tracking-tighter font-extrabold">
-              Happening now.
+              Connect Us
             </h1>
           </div>
           {/* Login or Register TEXT */}
@@ -110,15 +105,12 @@ const Login = () => {
             {haveAccount ? "Login" : "Register"}
           </h1>
           {/* LOGIN/REGISTER FORM */}
-          <form
-            className=" flex flex-col gap-4"
-            onSubmit={handleSubmit}
-          >
+          <form className=" flex flex-col gap-4" onSubmit={handleSubmit}>
             {!haveAccount && (
               <>
                 {/* NAME INPUT */}
                 <input
-                  className=" bg-transparent text-lg w-96 outline-none border-2 border-zinc-800 rounded-full py-2 px-5 focus-within:border-sky-500 placeholder:pl-1"
+                  className=" bg-transparent text-lg w-96 outline-none border-2 border-[#482f1e] rounded-full py-2 px-5 focus-within:border-[#E9804D] placeholder:pl-1"
                   type="text"
                   name="name"
                   value={loginSignUpData.name}
@@ -127,7 +119,7 @@ const Login = () => {
                 />
                 {/* USERNAME INPUT */}
                 <input
-                  className=" bg-transparent text-lg w-96 outline-none border-2 border-zinc-800 rounded-full py-2 px-5 focus-within:border-sky-500 placeholder:pl-1"
+                  className=" bg-transparent text-lg w-96 outline-none border-2 border-[#482f1e] rounded-full py-2 px-5 focus-within:border-[#E9804D] placeholder:pl-1"
                   type="text"
                   name="username"
                   value={loginSignUpData.username}
@@ -138,7 +130,7 @@ const Login = () => {
             )}
             {/* EMAIL INPUT */}
             <input
-              className=" bg-transparent text-lg w-96 outline-none border-2 border-zinc-800 rounded-full py-2 px-5 focus-within:border-sky-500 placeholder:pl-1"
+              className=" bg-transparent text-lg w-96 outline-none border-2 border-[#482f1e] rounded-full py-2 px-5 focus-within:border-[#E9804D] placeholder:pl-1"
               type="email"
               name="email"
               value={loginSignUpData.email}
@@ -147,7 +139,7 @@ const Login = () => {
             />
             {/* PASSWORD INPUT */}
             <input
-              className=" bg-transparent text-lg w-96 outline-none border-2 border-zinc-800 rounded-full py-2 px-5 focus-within:border-sky-500 placeholder:pl-1"
+              className=" bg-transparent text-lg w-96 outline-none border-2 border-[#482f1e] rounded-full py-2 px-5 focus-within:border-[#E9804D] placeholder:pl-1"
               type="password"
               name="password"
               value={loginSignUpData.password}
@@ -155,7 +147,7 @@ const Login = () => {
               placeholder="Password"
             />
             {/* SUBMIT button */}
-            <button className="self-start w-96 px-6 py-2 text-lg font-bold rounded-full bg-sky-700">
+            <button className="self-start w-96 px-6 py-2 text-lg font-bold rounded-full bg-[#E9804D]">
               {haveAccount ? "Login" : "Create Account"}
             </button>
           </form>
@@ -166,7 +158,7 @@ const Login = () => {
             {/* LOGIN / SIGNUP FORM toggle button */}
             <span
               onClick={loginSignupHandler}
-              className=" text-sky-400 font-bold cursor-pointer"
+              className=" text-[#E9804D] hover:underline font-bold cursor-pointer"
             >
               {haveAccount ? "Register" : "Login"}
             </span>{" "}

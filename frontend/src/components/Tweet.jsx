@@ -75,9 +75,9 @@ const Tweet = ({ tweet, loggedInUser }) => {
     }
   };
 
-  const inputBoxId = "input-box"
+  const inputBoxId = "input-box";
   return (
-    <div className="w-full p-4 border-b-[1px] border-zinc-800">
+    <div className="w-full p-4 border-t-[1px] border-[#482f1e]">
       <div className="flex gap-2 ">
         <div className="h-fit ">
           <Avatar
@@ -93,17 +93,17 @@ const Tweet = ({ tweet, loggedInUser }) => {
         <div className=" w-full ">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="font-bold">
+              <span className="font-bold text-[#f0c29e]">
                 {tweet?.author?.name || "Twitter User"}
               </span>
               {tweet?.author?.followers?.length > 3 && (
-                <MdVerified className="text-sky-500" />
+                <MdVerified className="text-[#E9804D]" />
               )}
-              <span className="text-zinc-400">
-                @{tweet?.author?.username || "twitteruser"}
+              <span className="text-[#ECD6C5]">
+                <span className="font-extrabold">@</span>{tweet?.author?.username || "twitteruser"}
               </span>
-              <RxDividerVertical className="inline-block text-zinc-400" />
-              <span className="text-zinc-400">
+              <RxDividerVertical className="inline-block text-[#ECD6C5]" />
+              <span className="text-[#ECD6C5]">
                 {timeSince(tweet?.createdAt)}
               </span>
             </div>
@@ -136,7 +136,7 @@ const Tweet = ({ tweet, loggedInUser }) => {
         <div className="flex gap-2 items-center text-xl px-4 ">
           <div
             onClick={() => setShowComments((prev) => !prev)}
-            className="cursor-pointer rounded-full hover:bg-sky-100 p-2 hover:text-sky-900"
+            className="cursor-pointer rounded-full text-sky-500 hover:bg-sky-100 p-2 hover:text-sky-900"
           >
             <label htmlFor={inputBoxId}>
               <FaRegComment className="" />

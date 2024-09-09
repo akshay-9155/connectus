@@ -7,8 +7,12 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { USER_API_ENDPOINT } from "../../utils/constants";
-import { followingUpdate, refreshProfile, setOtherUserUpdate } from "../redux/features/user/userSlice";
-import ReactLoading from 'react-loading';
+import {
+  followingUpdate,
+  refreshProfile,
+  setOtherUserUpdate,
+} from "../redux/features/user/userSlice";
+import ReactLoading from "react-loading";
 import EditProfile from "./EditProfile";
 import ImagePreview from "./ImagePreview";
 
@@ -19,7 +23,7 @@ const Profile = () => {
   const [showLoading, setShowLoading] = useState(false);
   const dispatch = useDispatch();
   const { loggedInUser, profile } = useSelector((state) => state.user);
-  const {id} = useParams();
+  const { id } = useParams();
   useGetProfile(id);
   const handleFollowUnfollow = async () => {
     try {
@@ -29,17 +33,17 @@ const Profile = () => {
         { withCredentials: true }
       );
       dispatch(followingUpdate(response?.data?.currentUser));
-      dispatch(setOtherUserUpdate())
-      toast.success(response?.data?.message)
+      dispatch(setOtherUserUpdate());
+      toast.success(response?.data?.message);
     } catch (error) {
       toast.error(error?.response?.data?.message);
       console.log(error);
     }
-  }
-  
+  };
+
   const handleEditImage = async (image) => {
     setShowLoading(true);
-    const {profileImage, coverImage} = image;
+    const { profileImage, coverImage } = image;
     console.log(profileImage, coverImage);
     try {
       const formData = new FormData();
@@ -72,14 +76,14 @@ const Profile = () => {
           "Something went wrong updating the profile."
       );
     }
-  }
+  };
 
   if (!profile) {
     return (
       <div className="w-full flex justify-center">
         <ReactLoading
           type="spinningBubbles"
-          color="#1A8CF1"
+          color="#E9804D"
           height={"20%"}
           width={"20%"}
         />
@@ -92,7 +96,7 @@ const Profile = () => {
   //     <div className="w-full flex justify-center">
   //       <ReactLoading
   //         type="spinningBubbles"
-  //         color="#1A8CF1"
+  //         color="#E9804D"
   //         height={"20%"}
   //         width={"20%"}
   //       />
@@ -101,7 +105,7 @@ const Profile = () => {
   // }
 
   return (
-    <div className="border-x-[1px] border-zinc-800 w-[50%] h-screen overflow-y-auto mx-8">
+    <div className="border-x-[1px] border-[#482f1e] w-[50%] h-screen overflow-y-auto mx-8">
       <div className=" flex gap-8 px-4 py-1 items-center">
         <Link
           to="/"
@@ -111,14 +115,14 @@ const Profile = () => {
         </Link>
         <div>
           <div className="flex gap-2 items-center text-xl">
-            <h3 className=" font-bold cursor-pointer">{profile.name}</h3>
+            <h3 className=" font-bold cursor-pointer text-[#f0c29e]">
+              {profile.name}
+            </h3>
             {profile?.followers.length > 3 && (
-              <MdVerified className="text-sky-500" />
+              <MdVerified className="text-[#E9804D]" />
             )}
           </div>
-          <span className="font-semibold text-zinc-500">
-            {profile.tweets.length} posts
-          </span>
+          <span className="font-semibold ">{profile.tweets.length} posts</span>
         </div>
       </div>
       <div className="w-full min-h-32 max-h-40 overflow-hidden">
@@ -147,21 +151,21 @@ const Profile = () => {
           {id === loggedInUser?._id ? (
             <button
               onClick={() => setIsEditProfileOpen(true)}
-              className=" text-zinc-50 border-[1px] border-zinc-700 text-sm font-bold py-2 px-6 rounded-full"
+              className=" text-zinc-50 border-[2px] border-[#55341f] hover:bg-[#ECD6C5] hover:text-[#1f120a] text-sm font-bold py-2 px-6 rounded-full"
             >
               Edit Profile
             </button>
           ) : loggedInUser?.following.some((user) => user._id === id) ? (
             <button
               onClick={handleFollowUnfollow}
-              className=" text-zinc-50 border-[1px] border-zinc-700 text-sm font-bold py-2 px-6 rounded-full"
+              className=" text-zinc-50 border-[2px] border-[#55341f] hover:bg-[#ECD6C5] hover:text-[#1f120a] text-sm font-bold py-2 px-6 rounded-full"
             >
               Unfollow
             </button>
           ) : (
             <button
               onClick={handleFollowUnfollow}
-              className=" text-zinc-50 border-[1px] border-zinc-700 text-sm font-bold py-2 px-6 rounded-full"
+              className=" text-zinc-50 border-[2px] border-[#55341f] hover:bg-[#ECD6C5] hover:text-[#1f120a] text-sm font-bold py-2 px-6 rounded-full"
             >
               Follow
             </button>
@@ -169,8 +173,8 @@ const Profile = () => {
         </div>
       </div>
       <div className="mt-5 px-4">
-        <h3 className="text-xl font-bold">{profile.name}</h3>
-        <span className=" text-zinc-500">@{profile.username}</span>
+        <h3 className="text-xl font-bold text-[#f0c29e]">{profile.name}</h3>
+        <span className=" "><span className="font-extrabold">@</span>{profile.username}</span>
         <p className="mt-5">{profile.bio || "Describe yourself here!!"}</p>
       </div>
       {isEditProfileOpen && (
@@ -182,7 +186,7 @@ const Profile = () => {
       {showCoverImagePreview && (
         <ImagePreview
           profileId={id}
-          loggedInUserId = {loggedInUser?._id}
+          loggedInUserId={loggedInUser?._id}
           imageSrc={profile.coverImage}
           onClose={() => setShowCoverImagePreview(false)}
           onEdit={handleEditImage}
@@ -193,7 +197,7 @@ const Profile = () => {
       {showProfileImagePreview && (
         <ImagePreview
           profileId={id}
-          loggedInUserId = {loggedInUser?._id}
+          loggedInUserId={loggedInUser?._id}
           imageSrc={profile.profileImage}
           onClose={() => setShowProfileImagePreview(false)}
           onEdit={handleEditImage}

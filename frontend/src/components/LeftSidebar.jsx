@@ -48,7 +48,8 @@ const LeftSidebar = () => {
       icon: <FaSignOutAlt />,
       animation: "slide-up",
       confirmLabel: "LOGOUT",
-      cancelLabel: "CANCEL"
+      cancelLabel: "CANCEL",
+      color: "orange"
     }).then((answer) => {
       if (answer) {
         handleLogout();
@@ -109,13 +110,9 @@ const LeftSidebar = () => {
 
   return (
     <div className="w-[20%]">
-      <div className="w-fit p-3 rounded-full hover:bg-zinc-800">
+      <div className="w-fit p-3 rounded-full hover:scale-125">
         <Link to="/">
-          <img
-            src="https://imgs.search.brave.com/JSCTdx5RmCcveSa-5gF69eVlcSf-4pr9WuYI_fLZqlE/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9mcmVl/bG9nb3BuZy5jb20v/aW1hZ2VzL2FsbF9p/bWcvMTY5MDY0Mzc3/N3R3aXR0ZXIteCUy/MGxvZ28tcG5nLXdo/aXRlLnBuZw"
-            alt="x-logo"
-            className="h-6"
-          />
+          <img src="/AppLogo.jpg" alt="x-logo" className="h-10 rounded-full" />
         </Link>
       </div>
       <ul>
@@ -124,7 +121,7 @@ const LeftSidebar = () => {
             <Link
               onClick={item.name === "Logout" && handleLogoutConfirm}
               to={item.to}
-              className="flex items-center gap-2 my-4 rounded-full w-fit pl-3 pr-4 py-2 hover:bg-zinc-800"
+              className="flex items-center gap-2 my-4 rounded-full w-fit pl-3 pr-4 py-2 hover:bg-[#ECD6C5] hover:text-[#1f120a]"
             >
               <item.icon size={26} />
               <span className="text-xl font-semibold">{item.name}</span>
@@ -136,7 +133,7 @@ const LeftSidebar = () => {
         {/* Button to toggle dropdown */}
         <button
           onClick={toggleDropdown}
-          className="flex items-center gap-2 my-4 rounded-full w-fit pl-3 pr-4 py-2 hover:bg-zinc-800"
+          className="flex items-center gap-2 my-4 rounded-full w-fit pl-3 pr-4 py-2 hover:bg-[#ECD6C5] hover:text-[#1f120a]"
         >
           <CgMoreO size={26} />
           <span className="text-xl font-semibold">More</span>
@@ -144,17 +141,17 @@ const LeftSidebar = () => {
 
         {/* Dropdown menu */}
         {isOpen && (
-          <div className="absolute left-0 mt-2 bg-zinc-800 text-white rounded-lg shadow-lg z-10 w-full">
+          <div className="absolute left-0 mt-2 bg-[#3e2414] text-[#ECD6C5] rounded-lg shadow-lg z-10 w-full">
             <ul className="flex flex-col gap-1 py-2">
               <li
                 onClick={handleAccountDeleteConfirm}
-                className="cursor-pointer hover:bg-zinc-700 px-4 py-2 rounded-lg"
+                className="cursor-pointer font-bold hover:bg-[#ECD6C5] hover:text-[#1f120a] px-4 py-2 rounded-lg"
               >
                 Delete Account
               </li>
               <li
                 onClick={handleLogoutConfirm}
-                className="cursor-pointer hover:bg-zinc-700 px-4 py-2 rounded-lg"
+                className="cursor-pointer font-bold hover:bg-[#ECD6C5] hover:text-[#1f120a] px-4 py-2 rounded-lg"
               >
                 Logout
               </li>

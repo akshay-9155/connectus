@@ -9,7 +9,7 @@ const Cards = ({ user }) => {
         <Link to={`/profile/${user?._id}`}>
           <Avatar
             src={
-              user?.profileImage || "../assets/images/defaultProfileImage.jpg"
+              user?.profileImage
             }
             size="40"
             round={true}
@@ -20,9 +20,9 @@ const Cards = ({ user }) => {
       <div className="flex justify-between w-full items-center">
         <div className="">
           <div className=" flex items-center gap-2">
-            <span>{user?.name}</span>
+            <span className="text-[#f0c29e] font-bold">{user?.name}</span>
             {user?.followers.length > 3 && (
-              <MdVerified className="text-sky-400" />
+              <MdVerified className="text-[#E9804D]" />
             )}
           </div>
           <Link to={`/profile/${user?._id}`}>
@@ -31,7 +31,7 @@ const Cards = ({ user }) => {
         </div>
         <div>
           <Link to={`/profile/${user?._id}`}>
-            <button className="bg-zinc-50 text-zinc-950 text-sm font-bold py-1 px-3 rounded-full">
+            <button className="bg-[#683013] text-sm font-bold py-1 px-3 rounded-full">
               Profile
             </button>
           </Link>

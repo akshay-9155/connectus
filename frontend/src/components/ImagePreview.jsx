@@ -43,7 +43,7 @@ const ImagePreview = ({
             <div className="w-full flex justify-center">
               <ReactLoading
                 type="spinningBubbles"
-                color="#1A8CF1"
+                color="#E9804D"
                 height={"20%"}
                 width={"20%"}
               />
@@ -54,7 +54,11 @@ const ImagePreview = ({
             <img
               src={imageSrc || ""}
               alt="Preview"
-              className={`bg-pink-700  mt-2 ${isProfileImageOpen ? "min-h-96 min-w-96 h-[400px]" : " min-h-32 max-h-48 min-w-[500px] w-full"} object-cover rounded`}
+              className={`bg-pink-700  mt-2 ${
+                isProfileImageOpen
+                  ? "min-h-96 min-w-96 h-[400px]"
+                  : " min-h-32 max-h-48 min-w-[500px] w-full"
+              } object-cover rounded`}
             />
           </>
         )}
@@ -65,7 +69,7 @@ const ImagePreview = ({
               className={`px-4 py-2 ${
                 showImageInput
                   ? "bg-red-500 hover:bg-red-600"
-                  : "bg-blue-500 hover:bg-blue-600"
+                  : "bg-orange-500 hover:bg-orange-600"
               } text-white rounded `}
               onClick={() => setShowImageInput((prev) => !prev)}
             >
@@ -83,7 +87,7 @@ const ImagePreview = ({
                   />
                 </form>
                 <button
-                  className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-800"
+                  className="bg-orange-500 px-4 py-2 rounded hover:bg-orange-800"
                   onClick={() => onEdit(image)}
                 >
                   Submit
