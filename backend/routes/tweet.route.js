@@ -5,17 +5,17 @@ import { jwtTokenAuthentication } from '../config/jwtAuthController.js';
 
 const router = express.Router();
 
-router.post("/create", jwtTokenAuthentication, upload.fields([
+router.post("/create", upload.fields([
     { name: "tweetImages", maxCount: 10 }
 ]), createTweet);
-router.delete("/delete/:tweetId", jwtTokenAuthentication, deleteTweet);
-router.put("/likeordislike/:tweetId", jwtTokenAuthentication, likeOrDislike);
-router.get("/getAllTweets", jwtTokenAuthentication, GetAllTweet);
-router.get("/getFollowingTweets", jwtTokenAuthentication, getFollowingTweets);
-router.post("/addComment/:tweetId", jwtTokenAuthentication, addCommentOrReply);
-router.get("/getComments/:tweetId", jwtTokenAuthentication, getCommentByTweedId);
-router.get("/getReplies/:commentId", jwtTokenAuthentication, getRepliesByCommentId);
-router.delete("/deleteComment/:commentId", jwtTokenAuthentication, deleteComment);
-router.get("/likeOrDislikeComment/:commentId", jwtTokenAuthentication, likeOrDislikeComment);
+router.delete("/delete/:tweetId", deleteTweet);
+router.put("/likeordislike/:tweetId", likeOrDislike);
+router.get("/getAllTweets", GetAllTweet);
+router.get("/getFollowingTweets", getFollowingTweets);
+router.post("/addComment/:tweetId", addCommentOrReply);
+router.get("/getComments/:tweetId", getCommentByTweedId);
+router.get("/getReplies/:commentId", getRepliesByCommentId);
+router.delete("/deleteComment/:commentId", deleteComment);
+router.get("/likeOrDislikeComment/:commentId", likeOrDislikeComment);
 
 export default router;
