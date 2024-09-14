@@ -15,7 +15,8 @@ app.use(express.urlencoded({
 app.use(express.json());
 app.use(cookieParser());
 var corsOptions = {
-    origin: 'http://localhost:5173',
+    // origin: 'http://localhost:5173',
+    origin: 'https://connectus-frontend-tqv5.onrender.com',
     credentials: true
 };
 app.use(cors(corsOptions));
