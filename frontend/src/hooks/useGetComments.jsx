@@ -1,10 +1,11 @@
 import axios from "axios";
 import { TWEET_API_ENDPOINT } from "../../utils/constants";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setComments } from "../redux/features/tweets/tweetSlice";
 
 const useGetComments = (tweetId) => {
+    const { token } = useSelector(state=>state.user);
     const dispatch = useDispatch();
     useEffect(()=>{
         const fetchComments = async () => {
@@ -13,6 +14,7 @@ const useGetComments = (tweetId) => {
             const response = await axios.get(
               `${TWEET_API_ENDPOINT}/getComments/${tweetId}`,
               {
+                headers: { Authorization: `Bearer ${token}` },
                 withCredentials: true,
               }
             );

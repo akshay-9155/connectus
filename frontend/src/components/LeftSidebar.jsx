@@ -11,12 +11,13 @@ import {
   getLoggedInUser,
   getOtherUser,
   getProfile,
+  setToken,
 } from "../redux/features/user/userSlice";
 import { getAllTweets } from "../redux/features/tweets/tweetSlice";
 import { showConfirm } from "react-confirm-prompt";
 
 const LeftSidebar = () => {
-  const { loggedInUser } = useSelector((state) => state.user);
+  const { loggedInUser, token } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -59,10 +60,11 @@ const LeftSidebar = () => {
 
   const handleLogout = async () => {
     try {
-      const res = await axios.get(`${USER_API_ENDPOINT}/logout`);
+      const res = await axios.get(`${USER_API_ENDPOINT}/logout`,{withCredentials: true});
       toast.success(res?.data?.message);
       navigate("/login");
       dispatch(getLoggedInUser(null));
+      dispatch(setToken(null));
       dispatch(getOtherUser(null));
       dispatch(getProfile(null));
       dispatch(getAllTweets(null));
@@ -74,7 +76,10 @@ const LeftSidebar = () => {
 
   const deleteAccount = async () => {
     try {
-      const res = await axios.delete(`${USER_API_ENDPOINT}/deleteAccount`,{withCredentials: true});
+      const res = await axios.delete(`${USER_API_ENDPOINT}/deleteAccount`, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      });
       toast.success(res?.data?.message);
       navigate("/login");
       dispatch(getLoggedInUser(null));

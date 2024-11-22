@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { USER_API_ENDPOINT } from "../../utils/constants";
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { refreshProfile } from "../redux/features/user/userSlice";
 import ReactLoading from "react-loading";
 
@@ -21,6 +21,8 @@ const EditProfile = ({ onClose, profileInfo }) => {
   const [showLoading, setShowLoading] = useState(false);
 
   const dispatch = useDispatch();
+    const { token } = useSelector((state) => state.user);
+
 
   const handleProfileImageChange = (e) => {
     const file = e.target.files[0];
@@ -55,7 +57,10 @@ const EditProfile = ({ onClose, profileInfo }) => {
 
       const res = await axios.put(`${USER_API_ENDPOINT}/updateUser`, formData, {
         withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" }, // Specify multipart content type
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        }, // Specify multipart content type
       });
 
       setShowLoading(false);

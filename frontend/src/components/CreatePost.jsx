@@ -18,6 +18,7 @@ const CreatePost = ({ loggedInUser }) => {
   const imageInputRef = useRef(null);
   const dispatch = useDispatch();
   const { isActive } = useSelector((state) => state.tweet);
+  const { token } = useSelector((state) => state.user);
 
   useEffect(() => {
     // Cleanup object URLs when component unmounts
@@ -53,6 +54,7 @@ const CreatePost = ({ loggedInUser }) => {
       const res = await axios.post(`${TWEET_API_ENDPOINT}/create`, formData, {
         withCredentials: true,
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });

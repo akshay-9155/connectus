@@ -7,7 +7,7 @@ import ReactLoading from "react-loading";
 
 const Bookmark = () => {
   const { loggedInUser } = useSelector((state) => state.user);
-  console.log(loggedInUser);
+  // console.log(loggedInUser);
   if (!loggedInUser?.bookmarks) {
     return (
       <div className="w-full flex justify-center">

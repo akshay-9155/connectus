@@ -4,7 +4,7 @@ import { USER_API_ENDPOINT } from "../../utils/constants.jsx";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { getLoggedInUser } from "../redux/features/user/userSlice.jsx";
+import { getLoggedInUser, setToken } from "../redux/features/user/userSlice.jsx";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -53,6 +53,7 @@ const Login = () => {
         toast.success(response.data.message);
         // set LoggedInUser in store
         dispatch(getLoggedInUser(response?.data?.user));
+        dispatch(setToken(response?.data?.token));
         if (response.data.success) navigate("/");
       } catch (error) {
         toast.error(error?.response?.data?.message || "Internal Server Error");

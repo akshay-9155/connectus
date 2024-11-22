@@ -4,14 +4,16 @@ import { useEffect } from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import { getProfile } from '../redux/features/user/userSlice';
 const useGetProfile = (id) => {
-  const {refreshProfile} = useSelector(state => state.user);
+  const {refreshProfile, token} = useSelector(state => state.user);
   const dispatch = useDispatch();
   useEffect(()=>{
     const fetchProfile = async () => {
       try {
         const res = await axios.get(
           `${USER_API_ENDPOINT}/getUserProfile/${id}`,
-          { withCredentials: true }
+          { 
+            headers: {Authorization: `Bearer ${token}`},
+            withCredentials: true }
         );
         dispatch(getProfile(res?.data?.userProfile));
       } catch (error) {

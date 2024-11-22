@@ -5,7 +5,7 @@ import { LuDot } from "react-icons/lu";
 import { timeSince, TWEET_API_ENDPOINT } from "../../utils/constants";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setRefresh } from "../redux/features/tweets/tweetSlice";
 
 const CommentBox = ({ onClose, tweet, loggedInUserId }) => {
@@ -14,11 +14,12 @@ const CommentBox = ({ onClose, tweet, loggedInUserId }) => {
   const [type, setType] = useState("comment");
   const [commentId, setCommentId] = useState("");
   const dispatch = useDispatch();
+  const { token } = useSelector((state) => state.user);
   const handleReplyClick = (author, commentId) => {
     setReplyTarget(author);
     setType("reply");
     setCommentId(commentId);
-    setInputValue(`@${author.username} `);
+    setInputValue(`@${author?.username} `);
   };
 
   const handlePostComment = async () => {
@@ -33,7 +34,10 @@ const CommentBox = ({ onClose, tweet, loggedInUserId }) => {
       const response = await axios.post(
         `${TWEET_API_ENDPOINT}/addComment/${tweet._id}`,
         data,
-        { withCredentials: true }
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
       );
       dispatch(setRefresh());
       toast.success(response?.data?.message);
@@ -50,20 +54,12 @@ const CommentBox = ({ onClose, tweet, loggedInUserId }) => {
 
   const deleteComment = async (commentId) => {
     try {
-      const response = await axios.delete(`${TWEET_API_ENDPOINT}/deleteComment/${commentId}`, {withCredentials:true});
-      dispatch(setRefresh());
-      toast.success(response?.data?.message);
-    } catch (error) {
-      console.log(error);
-      toast.error(error?.response?.data?.message || "Something went wrong!");
-    }
-  };
-
-
-  const likeDislikeComment = async (commentId) => {
-    try {
-      const response = await axios.get(
-        `${TWEET_API_ENDPOINT}/likeOrDislikeComment/${commentId}`, {withCredentials: true}
+      const response = await axios.delete(
+        `${TWEET_API_ENDPOINT}/deleteComment/${commentId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
       );
       dispatch(setRefresh());
       toast.success(response?.data?.message);
@@ -73,8 +69,22 @@ const CommentBox = ({ onClose, tweet, loggedInUserId }) => {
     }
   };
 
- 
-  
+  const likeDislikeComment = async (commentId) => {
+    try {
+      const response = await axios.get(
+        `${TWEET_API_ENDPOINT}/likeOrDislikeComment/${commentId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
+      );
+      dispatch(setRefresh());
+      toast.success(response?.data?.message);
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.response?.data?.message || "Something went wrong!");
+    }
+  };
 
   return (
     <div className="mt-2 bg-[#1f120a] p-4 rounded-lg shadow-lg">
@@ -123,78 +133,85 @@ const CommentBox = ({ onClose, tweet, loggedInUserId }) => {
   );
 };
 
-const SingleComment = memo(({ comment, onReplyClick, loggedInUserId, deleteComment, likeDislikeComment }) => {
-  const [showReplies, setShowReplies] = useState(false);
-  
+const SingleComment = memo(
+  ({
+    comment,
+    onReplyClick,
+    loggedInUserId,
+    deleteComment,
+    likeDislikeComment,
+  }) => {
+    const [showReplies, setShowReplies] = useState(false);
 
-  return (
-    <div className="py-2 border-b border-[#482f1e]">
-      <div className="flex justify-between items-start">
-        <p className="text-sm ">
-          <span className="font-extrabold">@</span>
-          {comment?.author?.username} <LuDot className="inline " />
-          <span className="ml-1">{comment.content}</span>
-        </p>
-        <div className=" flex">
-          <div
-            onClick={() => likeDislikeComment(comment?._id)}
-            className="ml-2 text-red-400 cursor-pointer"
-          >
-            {comment?.likes?.includes(loggedInUserId) ? (
-              <FaHeart />
-            ) : (
-              <FaRegHeart />
-            )}
-          </div>
-          {comment?.author?._id == loggedInUserId && (
+    return (
+      <div className="py-2 border-b border-[#482f1e]">
+        <div className="flex justify-between items-start">
+          <p className="text-sm ">
+            <span className="font-extrabold">@</span>
+            {comment?.author?.username} <LuDot className="inline " />
+            <span className="ml-1">{comment.content}</span>
+          </p>
+          <div className=" flex">
             <div
-              onClick={() => deleteComment(comment?._id)}
+              onClick={() => likeDislikeComment(comment?._id)}
               className="ml-2 text-red-400 cursor-pointer"
             >
-              <MdDelete />
+              {comment?.likes?.includes(loggedInUserId) ? (
+                <FaHeart />
+              ) : (
+                <FaRegHeart />
+              )}
             </div>
-          )}
+            {comment?.author?._id == loggedInUserId && (
+              <div
+                onClick={() => deleteComment(comment?._id)}
+                className="ml-2 text-red-400 cursor-pointer"
+              >
+                <MdDelete />
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-      <div className="text-xs mt-1">
-        <span>{timeSince(comment.createdAt)}</span> ·{" "}
-        <span>{comment?.likes?.length} likes</span> ·{" "}
-        <label
-          className="cursor-pointer"
-          onClick={() => onReplyClick(comment.author, comment._id)}
-        >
-          Reply
-        </label>
-      </div>
-      {comment.replies && comment.replies.length > 0 && (
-        <div>
-          <span
-            onClick={() => setShowReplies(!showReplies)}
-            className="text-[#E9804D] cursor-pointer text-sm mt-1 block"
+        <div className="text-xs mt-1">
+          <span>{timeSince(comment.createdAt)}</span> ·{" "}
+          <span>{comment?.likes?.length} likes</span> ·{" "}
+          <label
+            className="cursor-pointer"
+            onClick={() => onReplyClick(comment.author, comment._id)}
           >
-            {showReplies
-              ? "— Hide replies"
-              : `— View ${comment.replies.length} replies`}
-          </span>
-          {showReplies && (
-            <div className="ml-5 mt-2 space-y-2">
-              {comment.replies.map((reply, index) => (
-                <SingleReply
-                  key={index}
-                  reply={reply}
-                  onReplyClick={onReplyClick}
-                  loggedInUserId={loggedInUserId}
-                  deleteComment={deleteComment}
-                  likeDislikeComment={likeDislikeComment}
-                />
-              ))}
-            </div>
-          )}
+            Reply
+          </label>
         </div>
-      )}
-    </div>
-  );
-});
+        {comment.replies && comment.replies.length > 0 && (
+          <div>
+            <span
+              onClick={() => setShowReplies(!showReplies)}
+              className="text-[#E9804D] cursor-pointer text-sm mt-1 block"
+            >
+              {showReplies
+                ? "— Hide replies"
+                : `— View ${comment.replies.length} replies`}
+            </span>
+            {showReplies && (
+              <div className="ml-5 mt-2 space-y-2">
+                {comment.replies.map((reply, index) => (
+                  <SingleReply
+                    key={index}
+                    reply={reply}
+                    onReplyClick={onReplyClick}
+                    loggedInUserId={loggedInUserId}
+                    deleteComment={deleteComment}
+                    likeDislikeComment={likeDislikeComment}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+);
 
 const SingleReply = memo(
   ({

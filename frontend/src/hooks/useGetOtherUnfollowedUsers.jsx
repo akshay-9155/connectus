@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getOtherUser } from "../redux/features/user/userSlice";
 
 const useGetOtherUnfollowedUsers = () => {
-  const { otherUserUpdate } = useSelector((state) => state.user);
+  const { otherUserUpdate, token } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   useEffect(() => {
     const fetchOtherUsers = async () => {
@@ -13,6 +13,7 @@ const useGetOtherUnfollowedUsers = () => {
         const res = await axios.get(
           `${USER_API_ENDPOINT}/getOtherUnfollowedUsers`,
           {
+            headers: { Authorization: `Bearer ${token}` },
             withCredentials: true,
           }
         );

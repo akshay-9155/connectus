@@ -6,13 +6,14 @@ import { getAllTweets } from "../redux/features/tweets/tweetSlice";
 
 const useGetTweets = async () => {
   const { refresh, isActive } = useSelector((state) => state.tweet);
-  const {loggedInUser} = useSelector(state=>state.user);
+  const {loggedInUser, token} = useSelector(state=>state.user);
   const dispatch = useDispatch();
   if(!loggedInUser) return;
   useEffect(() => {
     const fetchAllTweets = async () => {
       try {
         const res = await axios.get(`${TWEET_API_ENDPOINT}/getAllTweets`, {
+          headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
         });
         dispatch(getAllTweets(res?.data?.Tweets));
@@ -25,6 +26,7 @@ const useGetTweets = async () => {
         const res = await axios.get(
           `${TWEET_API_ENDPOINT}/getFollowingTweets`,
           {
+            headers: { Authorization: `Bearer ${token}` },
             withCredentials: true,
           }
         );

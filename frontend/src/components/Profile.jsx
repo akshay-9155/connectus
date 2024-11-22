@@ -22,7 +22,7 @@ const Profile = () => {
   const [showCoverImagePreview, setShowCoverImagePreview] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
   const dispatch = useDispatch();
-  const { loggedInUser, profile } = useSelector((state) => state.user);
+  const { loggedInUser, profile, token } = useSelector((state) => state.user);
   const { id } = useParams();
   useGetProfile(id);
   const handleFollowUnfollow = async () => {
@@ -30,7 +30,10 @@ const Profile = () => {
       const response = await axios.put(
         `${USER_API_ENDPOINT}/toggleFollow/${id}`,
         {},
-        { withCredentials: true }
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
       );
       dispatch(followingUpdate(response?.data?.currentUser));
       dispatch(setOtherUserUpdate());
@@ -44,7 +47,7 @@ const Profile = () => {
   const handleEditImage = async (image) => {
     setShowLoading(true);
     const { profileImage, coverImage } = image;
-    console.log(profileImage, coverImage);
+    // console.log(profileImage, coverImage);
     try {
       const formData = new FormData();
       formData.append("name", profile.name);
@@ -60,7 +63,9 @@ const Profile = () => {
 
       const res = await axios.put(`${USER_API_ENDPOINT}/updateUser`, formData, {
         withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" }, // Specify multipart content type
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data" }, // Specify multipart content type
       });
       setShowLoading(false);
 

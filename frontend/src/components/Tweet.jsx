@@ -11,7 +11,7 @@ import {
   TWEET_API_ENDPOINT,
   USER_API_ENDPOINT,
 } from "../../utils/constants";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setRefresh } from "../redux/features/tweets/tweetSlice";
 import { toast } from "react-hot-toast";
 import { getLoggedInUser } from "../redux/features/user/userSlice";
@@ -22,12 +22,17 @@ const Tweet = ({ tweet, loggedInUser }) => {
   // console.log(tweet);
   const [showComments, setShowComments] = useState(false);
   const dispatch = useDispatch();
+  const { token } = useSelector((state) => state.user);
+
   const likeOrDislikeHandler = async () => {
     try {
       const res = await axios.put(
         `${TWEET_API_ENDPOINT}/likeordislike/${tweet?._id}`,
         {},
-        { withCredentials: true }
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
       );
       dispatch(setRefresh());
       toast.success(res?.data?.message);
@@ -39,7 +44,10 @@ const Tweet = ({ tweet, loggedInUser }) => {
     try {
       const res = await axios.delete(
         `${TWEET_API_ENDPOINT}/delete/${tweet?._id}`,
-        { withCredentials: true }
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
       );
       dispatch(setRefresh());
       toast.success(res?.data?.message);
@@ -66,7 +74,10 @@ const Tweet = ({ tweet, loggedInUser }) => {
       const res = await axios.put(
         `${USER_API_ENDPOINT}/bookmark/${tweet?._id}`,
         {},
-        { withCredentials: true }
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
       );
       dispatch(getLoggedInUser(res?.data?.updatedUser));
       toast.success(res?.data?.message);
@@ -100,7 +111,8 @@ const Tweet = ({ tweet, loggedInUser }) => {
                 <MdVerified className="text-[#E9804D]" />
               )}
               <span className="text-[#ECD6C5]">
-                <span className="font-extrabold">@</span>{tweet?.author?.username || "twitteruser"}
+                <span className="font-extrabold">@</span>
+                {tweet?.author?.username || "twitteruser"}
               </span>
               <RxDividerVertical className="inline-block text-[#ECD6C5]" />
               <span className="text-[#ECD6C5]">

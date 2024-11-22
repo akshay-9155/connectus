@@ -6,7 +6,8 @@ export const userSlice = createSlice({
     otherUser: null,
     profile: null,
     otherUserUpdate: false,
-    refreshProfile: false
+    refreshProfile: false,
+    token: null
   },
   reducers: {
     //  multiple actions
@@ -27,6 +28,9 @@ export const userSlice = createSlice({
     },
     refreshProfile: (state) => {
       state.refreshProfile = !state.refreshProfile;
+    },
+    setToken: (state, action) => {
+      state.token = action.payload;
     }
   },
 });
@@ -37,6 +41,7 @@ export const {
   getProfile,
   followingUpdate,
   setOtherUserUpdate,
-  refreshProfile
+  refreshProfile,
+  setToken
 } = userSlice.actions;
 export default userSlice.reducer;
