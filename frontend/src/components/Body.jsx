@@ -6,35 +6,38 @@ import Profile from './Profile'
 import Feed from './Feed'
 import Bookmark from './Bookmark'
 import ImageUpload from './ImageUpload'
-const browserRouter = createBrowserRouter([
-  {
-    path: '/',
-    element: <Home/>,
-    children: [
-      {
-        path: '/',
-        element: <Feed/>
-      },
-      {
-        path: '/profile/:id',
-        element: <Profile/>
-      },
-      {
-        path: '/bookmarks',
-        element: <Bookmark/>
-      },
-      {
-        path: '/upload',
-        element: <ImageUpload/>
-      }
-    ]
-  },
-  {
-    path: '/login',
-    element: <Login/>
-  }
-])
+import { useSelector } from 'react-redux'
+
 const Body = () => {
+  const { loggedInUser } = useSelector(state => state.user);
+  const browserRouter = createBrowserRouter([
+    {
+      path: "/",
+      element: loggedInUser ? <Home /> : <Login />,
+      children: [
+        {
+          path: "/",
+          element: loggedInUser ? <Feed /> : <Login />,
+        },
+        {
+          path: "/profile/:id",
+          element: loggedInUser ? <Profile /> : <Login />,
+        },
+        {
+          path: "/bookmarks",
+          element: loggedInUser ? <Bookmark /> : <Login />,
+        },
+        {
+          path: "/upload",
+          element: loggedInUser ? <ImageUpload /> : <Login />,
+        },
+      ],
+    },
+    {
+      path: "/login",
+      element: <Login />,
+    },
+  ]);
   return (
     <>
         <RouterProvider router={browserRouter}/>

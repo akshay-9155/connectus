@@ -63,6 +63,7 @@ const LeftSidebar = () => {
       const res = await axios.get(`${USER_API_ENDPOINT}/logout`,{withCredentials: true});
       toast.success(res?.data?.message);
       navigate("/login");
+      localStorage.removeItem("persist:root");
       dispatch(getLoggedInUser(null));
       dispatch(setToken(null));
       dispatch(getOtherUser(null));
